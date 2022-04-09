@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FuelStation.EF.Models
 {
-    public class BaseEntity
+    public class ValidatableEntity : BaseEntity
     {
-        public Guid Id { get; set; }
-        public bool IsActive { get; set; } = true;
+        public Guid? AuthenticationToken { get; set; }
+        public bool IsLogged { get; set; } = false;
     }
 }

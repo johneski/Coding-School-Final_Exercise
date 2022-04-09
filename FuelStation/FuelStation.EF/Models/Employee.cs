@@ -13,7 +13,7 @@ namespace FuelStation.EF.Models
         Cashier
     }
 
-    public class Employee : BaseEntity
+    public class Employee : ValidatableEntity
     {
         public string Name { get; set; }
         public string Surname { get; set; }

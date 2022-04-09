@@ -1,5 +1,6 @@
 ﻿using FuelStation.EF.Context;
 using FuelStation.EF.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,29 +17,58 @@ namespace FuelStation.EF.Repositories
         {
             _fuelStationContext = fuelStationContext;
         }
-        public Task CreateAsync(Customer entity)
+        public async Task CreateAsync(Customer entity)
         {
-            throw new NotImplementedException();
+            await _fuelStationContext.Customers.AddAsync(entity);
+            await _fuelStationContext.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var customer = await _fuelStationContext.Customers.FindAsync(id);
+            if (customer is not null)
+            {
+                customer.IsActive = false;
+                await _fuelStationContext.SaveChangesAsync();
+            }
+            else
+                throw new KeyNotFoundException("Customer not found");
         }
 
-        public Task<List<Customer>> GetAllAsync()
+        public async Task<List<Customer>> GetAllActiveAsync()
         {
-            throw new NotImplementedException();
+            return await _fuelStationContext.Customers.AsNoTracking().Where(x => x.IsActive).ToListAsync();
         }
 
-        public Task<Customer> GetByIdAsync(Guid id)
+        public async Task<List<Customer>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _fuelStationContext.Customers.AsNoTracking().ToListAsync();
         }
 
-        public Task UpdateAsync(Guid id, Customer entity)
+        public async Task<List<Customer>> GetAllInactiveAsync()
         {
-            throw new NotImplementedException();
+            return await _fuelStationContext.Customers.AsNoTracking().Where(x => !x.IsActive).ToListAsync();
+        }
+
+        public async Task<Customer?> GetByIdAsync(Guid id)
+        {
+            return await _fuelStationContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive && x.Id == id);
+        }
+
+        public async Task UpdateAsync(Guid id, Customer entity)
+        {
+            var customer = await _fuelStationContext.Customers.FindAsync(id);
+            if(customer is not null)
+            {
+                customer.Name = entity.Name;
+                customer.Surname = entity.Surname;
+                customer.CardNumber = entity.CardNumber;
+                customer.IsActive = entity.IsActive;
+                await _fuelStationContext.SaveChangesAsync();
+                return;
+            }
+
+            throw new KeyNotFoundException("Customer not found");
         }
     }
 }
