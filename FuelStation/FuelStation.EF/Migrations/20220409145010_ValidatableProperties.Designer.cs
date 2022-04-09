@@ -4,6 +4,7 @@ using FuelStation.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FuelStation.EF.Migrations
 {
     [DbContext(typeof(FuelStationContext))]
-    partial class FuelStationContextModelSnapshot : ModelSnapshot
+    [Migration("20220409145010_ValidatableProperties")]
+    partial class ValidatableProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,8 +184,8 @@ namespace FuelStation.EF.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("DiscountPercent")
-                        .HasPrecision(5, 4)
-                        .HasColumnType("decimal(5,4)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<decimal>("DiscountValue")
                         .HasPrecision(10, 2)
@@ -224,31 +226,6 @@ namespace FuelStation.EF.Migrations
                     b.ToTable("TransactionLines");
                 });
 
-            modelBuilder.Entity("FuelStation.EF.Models.UserCredentials", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique();
-
-                    b.ToTable("UserCredentials");
-                });
-
             modelBuilder.Entity("FuelStation.EF.Models.Transaction", b =>
                 {
                     b.HasOne("FuelStation.EF.Models.Customer", "Customer")
@@ -287,17 +264,6 @@ namespace FuelStation.EF.Migrations
                     b.Navigation("Transaction");
                 });
 
-            modelBuilder.Entity("FuelStation.EF.Models.UserCredentials", b =>
-                {
-                    b.HasOne("FuelStation.EF.Models.Employee", "Employee")
-                        .WithOne("Credentials")
-                        .HasForeignKey("FuelStation.EF.Models.UserCredentials", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("FuelStation.EF.Models.Customer", b =>
                 {
                     b.Navigation("Transactions");
@@ -305,9 +271,6 @@ namespace FuelStation.EF.Migrations
 
             modelBuilder.Entity("FuelStation.EF.Models.Employee", b =>
                 {
-                    b.Navigation("Credentials")
-                        .IsRequired();
-
                     b.Navigation("Transactions");
                 });
 

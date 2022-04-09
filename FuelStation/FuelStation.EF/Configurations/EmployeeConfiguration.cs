@@ -20,6 +20,7 @@ namespace FuelStation.EF.Configurations
             builder.Property(employee => employee.SalaryPerMonth).HasPrecision(9, 2);
             builder.Property(employee => employee.EmployeeType).IsRequired();
             builder.HasIndex(employee => employee.IsActive);
+
         }
     }
 }

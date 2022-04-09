@@ -21,6 +21,7 @@ namespace FuelStation.EF.Models
         public DateTime? HireDateEnd { get; set; }
         public decimal SalaryPerMonth { get; set; }
         public EmployeeType EmployeeType { get; set; }
+        public UserCredentials Credentials { get; set; }
         public List<Transaction> Transactions { get; set; }
     }
 }
