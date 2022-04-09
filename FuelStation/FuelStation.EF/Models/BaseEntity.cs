@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FuelStation.Blazor.Shared.Models
+namespace FuelStation.EF.Models
 {
     public class BaseEntity
     {
         public Guid Id { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using FuelStation.Blazor.Shared.Models;
+﻿using FuelStation.EF.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -19,6 +19,7 @@ namespace FuelStation.EF.Configurations
             builder.Property(line => line.DiscountPercent).HasPrecision(6, 2);
             builder.Property(line => line.DiscountValue).HasPrecision(10, 2);
             builder.Property(line => line.TotalValue).HasPrecision(10, 2);
+            builder.HasIndex(line => line.IsActive);
 
             builder.HasOne(line => line.Item).WithMany(item => item.TransactionLines).HasForeignKey(line => line.ItemId);
             builder.HasOne(line => line.Transaction).WithMany(transaction => transaction.TransactionLines).HasForeignKey(line => line.TransactionId);

@@ -1,3 +1,6 @@
+using FuelStation.EF.Context;
+using FuelStation.EF.Models;
+using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddDbContext<FuelStationContext>();
+builder.Services.AddScoped<IEntityRepo<Customer>, CustomerRepo>();
 
 var app = builder.Build();
 

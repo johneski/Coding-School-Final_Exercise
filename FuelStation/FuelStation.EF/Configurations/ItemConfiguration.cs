@@ -1,4 +1,4 @@
-﻿using FuelStation.Blazor.Shared.Models;
+﻿using FuelStation.EF.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -18,6 +18,7 @@ namespace FuelStation.EF.Configurations
             builder.Property(item => item.Description).HasMaxLength(50);
             builder.Property(item => item.Price).HasPrecision(10, 2);
             builder.Property(item => item.Cost).HasPrecision(10, 2);
+            builder.HasIndex(item => item.IsActive);
         }
     }
 }

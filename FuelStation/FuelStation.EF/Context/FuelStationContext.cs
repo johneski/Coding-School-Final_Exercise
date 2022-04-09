@@ -1,4 +1,4 @@
-﻿using FuelStation.Blazor.Shared.Models;
+﻿using FuelStation.EF.Models;
 using FuelStation.EF.Configurations;
 using Microsoft.EntityFrameworkCore;
 using System;

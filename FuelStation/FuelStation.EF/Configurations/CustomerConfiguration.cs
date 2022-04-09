@@ -1,4 +1,4 @@
-﻿using FuelStation.Blazor.Shared.Models;
+﻿using FuelStation.EF.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -18,6 +18,7 @@ namespace FuelStation.EF.Configurations
             builder.Property(customer => customer.Surname).HasMaxLength(50);
             builder.Property(customer => customer.CardNumber).HasMaxLength(50);
             builder.HasIndex(customer => customer.CardNumber).IsUnique(true);
+            builder.HasIndex(customer => customer.IsActive);
         }
     }
 }

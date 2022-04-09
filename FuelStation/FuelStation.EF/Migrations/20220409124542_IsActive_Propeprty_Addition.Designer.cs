@@ -4,6 +4,7 @@ using FuelStation.EF.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FuelStation.EF.Migrations
 {
     [DbContext(typeof(FuelStationContext))]
-    partial class FuelStationContextModelSnapshot : ModelSnapshot
+    [Migration("20220409124542_IsActive_Propeprty_Addition")]
+    partial class IsActive_Propeprty_Addition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,8 +52,6 @@ namespace FuelStation.EF.Migrations
 
                     b.HasIndex("CardNumber")
                         .IsUnique();
-
-                    b.HasIndex("IsActive");
 
                     b.ToTable("Customers");
                 });
@@ -91,8 +91,6 @@ namespace FuelStation.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
                     b.ToTable("Employees");
                 });
 
@@ -128,8 +126,6 @@ namespace FuelStation.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
                     b.ToTable("Items");
                 });
 
@@ -163,8 +159,6 @@ namespace FuelStation.EF.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("IsActive");
 
                     b.ToTable("Transactions");
                 });
@@ -208,8 +202,6 @@ namespace FuelStation.EF.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsActive");
 
                     b.HasIndex("ItemId");
 
