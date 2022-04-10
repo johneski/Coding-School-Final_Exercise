@@ -1,4 +1,6 @@
+using Blazored.LocalStorage;
 using FuelStation.EF.Context;
+using FuelStation.EF.Handlers;
 using FuelStation.EF.Models;
 using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -12,6 +14,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<FuelStationContext>();
 builder.Services.AddScoped<IEntityRepo<Customer>, CustomerRepo>();
+builder.Services.AddScoped<IEntityRepo<Employee>, EmployeeRepo>();
+builder.Services.AddScoped<IEntityRepo<Item>, ItemRepo>();
+builder.Services.AddScoped<IEntityRepo<Transaction>, TransactionRepo>();
+builder.Services.AddScoped<UserValidation>();
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 

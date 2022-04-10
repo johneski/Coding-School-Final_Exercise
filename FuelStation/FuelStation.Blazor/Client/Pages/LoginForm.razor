@@ -1,0 +1,57 @@
+﻿@layout LoginLayout
+@page "/"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient client
+@inject NavigationManager navManager
+
+
+<PageTitle>Login</PageTitle>
+
+<div style="height: 15rem;"></div>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="col-md-4">
+        <EditForm Model="@login" OnValidSubmit="@Submit">
+            <label for="username" class="form-label">Username</label>
+            <input @bind="@login.Username" class="form-control" name="username" />
+            <label for="password" class="form-label">Password</label>
+            <input @bind="@login.Password" class="form-control" name="password" />
+            <button type="submit" class="btn btn-primary mt-2">Login</button>
+        </EditForm>
+    </div>
+</div>
+
+@code{
+    private LoginEntity login = new();
+    private bool _authorized { get; set; } = false;
+
+    private async void Submit()
+    {
+        if(string.IsNullOrEmpty(login.Username) || string.IsNullOrEmpty(login.Password))
+        {
+            return;
+        }
+
+        client.DefaultRequestHeaders.Add("username", login.Username);
+        client.DefaultRequestHeaders.Add("password", login.Password);
+        HttpResponseMessage response = await client.PostAsJsonAsync("validation", "");
+        var stringToken = await response.Content.ReadAsStringAsync();
+        Guid authToken = Guid.Parse(stringToken.Replace("\"", ""));
+
+        if(Guid.Empty == authToken)
+        {
+            _authorized = false;
+            return;
+        }
+
+        _authorized = true;
+        //await localStorage.SetItemAsync("authToken", authToken);
+        navManager.NavigateTo("/customers");
+    }
+
+
+    class LoginEntity
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}

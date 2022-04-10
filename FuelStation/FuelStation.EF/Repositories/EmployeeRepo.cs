@@ -76,10 +76,10 @@ namespace FuelStation.EF.Repositories
 
         public async Task LogOut(Guid id)
         {
-            var employee = await _fuelStationContext.Employees.FindAsync(id);
-            if(employee is not null)
+            var credentials = await _fuelStationContext.UserCredentials.SingleOrDefaultAsync(x => x.EmployeeId == id);
+            if(credentials is not null)
             {
-                employee.IsLogged = false;
+                credentials.IsLogged = false;
                 await _fuelStationContext.SaveChangesAsync();
                 return;
             }
@@ -89,10 +89,10 @@ namespace FuelStation.EF.Repositories
 
         public async Task LogIn(Guid id)
         {
-            var employee = await _fuelStationContext.Employees.FindAsync(id);
-            if (employee is not null)
+            var credentials = await _fuelStationContext.UserCredentials.SingleOrDefaultAsync(x => x.EmployeeId == id);
+            if (credentials is not null)
             {
-                employee.IsLogged = true;
+                credentials.IsLogged = true;
                 await _fuelStationContext.SaveChangesAsync();
                 return;
             }

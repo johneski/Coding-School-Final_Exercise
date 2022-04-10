@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FuelStation.EF.Repositories
 {
-    internal class TransactionRepo : IEntityRepo<Transaction>
+    public class TransactionRepo : IEntityRepo<Transaction>
     {
         private readonly FuelStationContext _fuelStationContext;
 

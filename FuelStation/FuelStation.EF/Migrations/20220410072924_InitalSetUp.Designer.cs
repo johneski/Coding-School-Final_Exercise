@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FuelStation.EF.Migrations
 {
     [DbContext(typeof(FuelStationContext))]
-    [Migration("20220408191227_Initial")]
-    partial class Initial
+    [Migration("20220410072924_InitalSetUp")]
+    partial class InitalSetUp
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace FuelStation.EF.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Customer", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,6 +34,9 @@ namespace FuelStation.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -50,10 +53,12 @@ namespace FuelStation.EF.Migrations
                     b.HasIndex("CardNumber")
                         .IsUnique();
 
+                    b.HasIndex("IsActive");
+
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Employee", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Employee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,6 +73,9 @@ namespace FuelStation.EF.Migrations
 
                     b.Property<DateTime>("HireDateStart")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -88,7 +96,7 @@ namespace FuelStation.EF.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Item", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,6 +116,9 @@ namespace FuelStation.EF.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ItemType")
                         .HasColumnType("int");
 
@@ -117,10 +128,12 @@ namespace FuelStation.EF.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsActive");
+
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Transaction", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,6 +148,9 @@ namespace FuelStation.EF.Migrations
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
@@ -148,22 +164,27 @@ namespace FuelStation.EF.Migrations
 
                     b.HasIndex("EmployeeId");
 
+                    b.HasIndex("IsActive");
+
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.TransactionLine", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.TransactionLine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("DiscountPercent")
-                        .HasPrecision(6, 2)
-                        .HasColumnType("decimal(6,2)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<decimal>("DiscountValue")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -188,6 +209,8 @@ namespace FuelStation.EF.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsActive");
+
                     b.HasIndex("ItemId");
 
                     b.HasIndex("TransactionId");
@@ -195,15 +218,48 @@ namespace FuelStation.EF.Migrations
                     b.ToTable("TransactionLines");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Transaction", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.UserCredentials", b =>
                 {
-                    b.HasOne("FuelStation.Blazor.Shared.Models.Customer", "Customer")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AuthenticationToken")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsLogged")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("UserCredentials");
+                });
+
+            modelBuilder.Entity("FuelStation.EF.Models.Transaction", b =>
+                {
+                    b.HasOne("FuelStation.EF.Models.Customer", "Customer")
                         .WithMany("Transactions")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FuelStation.Blazor.Shared.Models.Employee", "Employee")
+                    b.HasOne("FuelStation.EF.Models.Employee", "Employee")
                         .WithMany("Transactions")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -214,15 +270,15 @@ namespace FuelStation.EF.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.TransactionLine", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.TransactionLine", b =>
                 {
-                    b.HasOne("FuelStation.Blazor.Shared.Models.Item", "Item")
+                    b.HasOne("FuelStation.EF.Models.Item", "Item")
                         .WithMany("TransactionLines")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FuelStation.Blazor.Shared.Models.Transaction", "Transaction")
+                    b.HasOne("FuelStation.EF.Models.Transaction", "Transaction")
                         .WithMany("TransactionLines")
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -233,22 +289,36 @@ namespace FuelStation.EF.Migrations
                     b.Navigation("Transaction");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Customer", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.UserCredentials", b =>
+                {
+                    b.HasOne("FuelStation.EF.Models.Employee", "Employee")
+                        .WithOne("Credentials")
+                        .HasForeignKey("FuelStation.EF.Models.UserCredentials", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("FuelStation.EF.Models.Customer", b =>
                 {
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Employee", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Employee", b =>
                 {
+                    b.Navigation("Credentials")
+                        .IsRequired();
+
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Item", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Item", b =>
                 {
                     b.Navigation("TransactionLines");
                 });
 
-            modelBuilder.Entity("FuelStation.Blazor.Shared.Models.Transaction", b =>
+            modelBuilder.Entity("FuelStation.EF.Models.Transaction", b =>
                 {
                     b.Navigation("TransactionLines");
                 });

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FuelStation.Blazor.Shared.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,6 @@ using System.Threading.Tasks;
 
 namespace FuelStation.EF.Models
 {
-    public enum PaymentMethod
-    {
-        CreditCard,
-        Cash
-    }
 
     public class Transaction : BaseEntity
     {

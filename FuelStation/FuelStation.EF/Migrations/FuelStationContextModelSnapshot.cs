@@ -62,9 +62,6 @@ namespace FuelStation.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AuthenticationToken")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("EmployeeType")
                         .HasColumnType("int");
 
@@ -76,9 +73,6 @@ namespace FuelStation.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLogged")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -96,8 +90,6 @@ namespace FuelStation.EF.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsActive");
 
                     b.ToTable("Employees");
                 });
@@ -230,16 +222,24 @@ namespace FuelStation.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AuthenticationToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsLogged")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
