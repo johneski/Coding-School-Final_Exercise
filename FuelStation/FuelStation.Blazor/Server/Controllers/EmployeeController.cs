@@ -62,5 +62,29 @@ namespace FuelStation.Blazor.Server.Controllers
 
             return BadRequest();
         }
+
+        [HttpGet("active/{id}")]
+        public async Task<EmployeeViewModel> GetActiveCustomer([FromQuery] Guid id, Guid authorization)
+        {
+            if (await _userValidation.ValidateToken(authorization))
+            {
+                var employee = await _employeeRepo.GetByIdAsync(id);
+                if (employee is not null)
+                {
+                    return new EmployeeViewModel()
+                    {
+                        Id = employee.Id,
+                        Name = employee.Name,
+                        Surname = employee.Surname,
+                        EmployeeType = employee.EmployeeType,
+                        HireDateEnd = employee.HireDateEnd,
+                        HireDateStart = employee.HireDateStart,
+                        SalaryPerMonth = employee.SalaryPerMonth
+                    };
+                }
+            }
+
+            return new EmployeeViewModel();
+        }
     }
 }

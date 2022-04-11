@@ -1,4 +1,4 @@
-﻿@page "/newcustomer"
+﻿@page "/newcustomer/{id:guid?}"
 @inject HttpClient httpClient
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
@@ -43,11 +43,17 @@
 </EditForm>
 
 @code {
+    [Parameter] public Guid? id { get; set; }
     private CustomerViewModel customer { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-
+        if(id is not null && Guid.Empty != id)
+        {
+            var authToken = await localStorage.GetItemAsStringAsync("authoToken");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
+            customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
+        }
     }
 
     private async void Save()

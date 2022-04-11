@@ -39,5 +39,28 @@ namespace FuelStation.Blazor.Server.Controllers
 
             return new List<ItemViewModel>();
         }
+
+        [HttpGet("active/{id}")]
+        public async Task<ItemViewModel> GetActiveItem([FromQuery] Guid id, Guid authorization)
+        {
+            if(await _userValidation.ValidateToken(authorization))
+            {
+                var item = await _itemRepo.GetByIdAsync(id);
+                if(item is not null)
+                {
+                    return new ItemViewModel()
+                    {
+                        Id = item.Id,
+                        Description = item.Description,
+                        Code = item.Code,
+                        Cost = item.Cost,
+                        ItemType = item.ItemType,
+                        Price = item.Price,
+                    };
+                }
+            }
+
+            return new ItemViewModel();
+        }
     }
 }

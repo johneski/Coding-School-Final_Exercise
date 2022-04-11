@@ -1,4 +1,4 @@
-﻿@page "/newitem"
+﻿@page "/newitem/{id:guid?}"
 @using FuelStation.Blazor.Shared.Enums
 @inject HttpClient httpClient
 @inject IJSRuntime jsRuntime
@@ -65,11 +65,17 @@
 </EditForm>
 
 @code {
+    [Parameter] public Guid? id { get; set; }
     private ItemViewModel item { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-
+        if(id is not null && Guid.Empty != id)
+        {
+            var authToken = await localStorage.GetItemAsStringAsync("authoToken");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
+            item = await httpClient.GetFromJsonAsync<ItemViewModel>($"/item/active/{id}");
+        }
     }
 
     private async void Save()
