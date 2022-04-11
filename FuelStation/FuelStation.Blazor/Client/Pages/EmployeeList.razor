@@ -1,0 +1,123 @@
+﻿@layout MainLayout
+@page "/employees"
+@using System.Net.Http.Headers
+@inject HttpClient httpClient
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@inject ILocalStorageService localStorage
+
+
+<PageTitle>Employees</PageTitle>
+
+<h1>Employees</h1>
+
+<button class="btn btn-primary" @onclick="NewEmployee">New</button>
+@if (_isLoading)
+{
+    <tr>
+    <div class="spinner-border" role="status"></div>
+    </tr>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Type</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>Salary Per Month</th>
+                
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(employees is not null || employees.Count() != 0)
+            {
+                @foreach(var employee in employees)
+                {
+                <tr>
+                    <td>@employee.Name</td>
+                    <td>@employee.Surname</td>
+                    <td>@employee.EmployeeType</td>
+                    <td>@employee.HireDateStart</td>
+                    <td>@employee.HireDateEnd</td>
+                    <td>@employee.SalaryPerMonth</td>
+                    
+                    if(!deletedList)
+                    {
+                        <td><button class="btn btn-success" @onclick="()=>EditEmployee(employee)" >Edit</button></td>
+                        <td><button class="btn btn-danger" @onclick="() => DeleteEmployee(employee)">Delete</button></td>
+                    }
+                    else
+                    {
+                        <td><button class="btn btn-danger" @onclick="() => Undo(employee)">Undo</button></td>
+                    }
+
+                </tr>
+                }
+            }            
+        </tbody>
+    </table>
+    @if (!deletedList)
+    {
+        <div class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+        <button class="btn btn-warning btn-sm" @onclick="() => ShowDeletedEmployees()">Show Deleted Customers</button>
+            </div>  
+    </div>
+        
+    }
+    else
+    {
+       <td><button class="btn btn-secondary" @onclick="()=>ShowActiveEmployees()">Back</button></td> 
+    }
+
+}
+
+
+@code {
+    private bool _isLoading { get; set; } = true;
+    private bool deletedList { get; set; } = false;
+    private List<EmployeeViewModel>? employees { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var strToken = await localStorage.GetItemAsync<string>("authToken");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(strToken.Replace("\"", ""));
+        employees = await httpClient.GetFromJsonAsync<List<EmployeeViewModel>>("/employee/active");
+        _isLoading = false;
+    }
+
+    public async void NewEmployee()
+    {
+        navManager.NavigateTo("/newemployee");
+    }
+
+    public async void EditEmployee(EmployeeViewModel customer)
+    {
+
+    }
+
+    public async void DeleteEmployee(EmployeeViewModel customer)
+    {
+
+    }
+
+    public async void Undo(EmployeeViewModel customer)
+    {
+
+    }
+
+    public async void ShowDeletedEmployees()
+    {
+    
+    }
+
+    public async void ShowActiveEmployees()
+    {
+    
+    }
+}

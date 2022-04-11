@@ -1,4 +1,4 @@
-﻿@page "/newitem"
+﻿@page "/newemployee"
 @using FuelStation.Blazor.Shared.Enums
 @inject HttpClient httpClient
 @inject IJSRuntime jsRuntime
@@ -6,23 +6,23 @@
 @inject ILocalStorageService localStorage
 
 
-<h3 class="mb-5">New Item</h3>
+<h3 class="mb-5">New Employee</h3>
 
-<EditForm Model="@item" OnValidSubmit="@Save">
+<EditForm Model="@employee" OnValidSubmit="@Save">
     <div class="row">
         <div class="col-1">
-             <label for="code" class="form-label">Code</label>
+             <label for="name" class="form-label">Name</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=item.Code name="code" class="form-control" pattern="[A-Za-z0-9]{1,15}" title="It must be at most 3 and 15 characters long." />
+            <InputText @bind-Value=employee.Name name="name" class="form-control" pattern="[A-Za-z]{3,15}"  />
         </div>
     </div>
     <div class="row">
         <div class="col-1">
-            <label for="description" class="form-label">Description</label>
+            <label class="form-label">SurName</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=item.Description class="form-control" name="description" pattern="[A-Za-z]{1,20}" title="It must be at most 20 characters long." />
+            <InputText @bind-Value=employee.Surname class="form-control" pattern="[A-Za-z]{3,20}"  />
         </div>
     </div>
     <div class="row">
@@ -30,28 +30,28 @@
             <label for="type" class="form-label">Type</label>
         </div>
         <div class="col-3">
-            <InputSelect @bind-Value=item.ItemType class="form-control" name="type">
-                @foreach(var type in Enum.GetValues(typeof(ItemType)))
+            <InputSelect @bind-Value=employee.EmployeeType class="form-control" name="type">
+                @foreach(var type in Enum.GetValues(typeof(EmployeeType)))
                 {
-                    <option value="@type">@type</option>
+                     <option value="@type">@type</option>
                 }
             </InputSelect>
         </div>
     </div>
     <div class="row">
         <div class="col-1">
-            <label for="cost" class="form-label">Cost</label>
+            <label for="dateStart" class="form-label">Start Date</label>
         </div>
         <div class="col-3">
-            <InputNumber @bind-Value=item.Cost class="form-control" name="cost" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+            <InputDate @bind-Value=employee.HireDateStart class="form-control" name="dateStart" />
         </div>
     </div>
     <div class="row">
         <div class="col-1">
-            <label for="price" class="form-label">Price</label>
+            <label for="salary" class="form-label">Salary / Month</label>
         </div>
         <div class="col-3">
-            <InputNumber @bind-Value=item.Price class="form-control" name="price" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+            <InputNumber @bind-Value=employee.SalaryPerMonth class="form-control" name="salary" pattern="[0-9]{9}" />
         </div>
     </div>
     <div class="row">
@@ -65,7 +65,7 @@
 </EditForm>
 
 @code {
-    private ItemViewModel item { get; set; } = new();
+    private EmployeeViewModel employee { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,7 +79,7 @@
 
     private async void GoBack()
     {
-        navManager.NavigateTo("/items");
+        navManager.NavigateTo("/employees");
     }
 
 }
