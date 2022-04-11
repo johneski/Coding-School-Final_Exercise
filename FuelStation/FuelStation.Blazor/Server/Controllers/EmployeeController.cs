@@ -18,13 +18,13 @@ namespace FuelStation.Blazor.Server.Controllers
         public EmployeeController(IEntityRepo<Employee> employeeRepo, UserValidation validation)
         {
             _employeeRepo = employeeRepo;
-            _validation = validation;
+            _userValidation = validation;
         }
 
         [HttpGet("active")]
         public async Task<IEnumerable<EmployeeViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if (await _validation.ValidateToken(authorization))
+            if (await _userValidation.ValidateToken(authorization))
             {
                 var employees = await _employeeRepo.GetAllActiveAsync();
                 return employees.Select(x => new EmployeeViewModel()
