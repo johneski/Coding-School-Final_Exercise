@@ -50,9 +50,10 @@
     {
         if(id is not null && Guid.Empty != id)
         {
-            var authToken = await localStorage.GetItemAsStringAsync("authoToken");
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
+            var authToken = await localStorage.GetItemAsStringAsync("authToken");
+            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken.Replace(""));
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
+            populate();
         }
     }
 
@@ -64,6 +65,13 @@
     private async void GoBack()
     {
         navManager.NavigateTo("/customers");
+    }
+
+    private void populate()
+    {
+        customer.Name = "John";
+        customer.Surname = "Eskioglou";
+        customer.CardNumber = "A123456789";
     }
 
 }

@@ -29,6 +29,7 @@ namespace FuelStation.EF.Repositories
             if (employee is not null)
             {
                 employee.IsActive = false;
+                employee.HireDateEnd ??= DateTime.Now;
                 await _fuelStationContext.SaveChangesAsync();
             }
             else

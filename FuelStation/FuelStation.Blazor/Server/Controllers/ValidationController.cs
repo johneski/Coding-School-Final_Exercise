@@ -26,7 +26,7 @@ namespace FuelStation.Blazor.Server.Controllers
                 return await _userValidation.CreateToken(employee.Id);
             }
 
-            return Guid.Empty;
+            return Guid.NewGuid();
         }
     }
 }

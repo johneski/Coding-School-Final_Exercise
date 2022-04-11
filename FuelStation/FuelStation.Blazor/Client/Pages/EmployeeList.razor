@@ -28,7 +28,6 @@ else
                 <th>StartDate</th>
                 <th>EndDate</th>
                 <th>Salary Per Month</th>
-                
                 <th></th>
             </tr>
         </thead>
@@ -45,10 +44,12 @@ else
                     <td>@employee.HireDateEnd</td>
                     <td>@employee.SalaryPerMonth</td>
                     
-                    if(!deletedList)
+                    @if(!deletedList)
                     {
-                        <td><button class="btn btn-success" @onclick="()=>EditEmployee(employee)" >Edit</button></td>
-                        <td><button class="btn btn-danger" @onclick="() => DeleteEmployee(employee)">Delete</button></td>
+                            <td>
+                                <button class="btn btn-success" @onclick="()=>  EditEmployee(employee)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteEmployee(employee)">Delete</button>
+                            </td>
                     }
                     else
                     {
@@ -71,7 +72,7 @@ else
     }
     else
     {
-       <td><button class="btn btn-secondary" @onclick="()=>ShowActiveEmployees()">Back</button></td> 
+       <td><button class="btn btn-secondary" @onclick="()=> ShowActiveEmployees()">Back</button></td> 
     }
 
 }
@@ -84,8 +85,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var strToken = await localStorage.GetItemAsync<string>("authToken");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(strToken.Replace("\"", ""));
         employees = await httpClient.GetFromJsonAsync<List<EmployeeViewModel>>("/employee/active");
         _isLoading = false;
     }
@@ -95,17 +94,17 @@ else
         navManager.NavigateTo("/newemployee");
     }
 
-    public async void EditEmployee(EmployeeViewModel customer)
+    public async void EditEmployee(EmployeeViewModel employee)
+    {
+        navManager.NavigateTo($"/newemployee/{employee.Id}");
+    }
+
+    public async void DeleteEmployee(EmployeeViewModel employee)
     {
 
     }
 
-    public async void DeleteEmployee(EmployeeViewModel customer)
-    {
-
-    }
-
-    public async void Undo(EmployeeViewModel customer)
+    public async void Undo(EmployeeViewModel employee)
     {
 
     }

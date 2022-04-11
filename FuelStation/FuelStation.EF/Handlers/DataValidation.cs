@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FuelStation.EF.Handlers
 {
-    public  class DataValidation
+    public class DataValidation
     {
         public bool Validate(CustomerViewModel customer)
         {

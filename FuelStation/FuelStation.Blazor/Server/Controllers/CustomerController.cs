@@ -39,11 +39,28 @@ namespace FuelStation.Blazor.Server.Controllers
             return new List<CustomerViewModel>();
         }
 
+        [HttpGet("inactive")]
+        public async Task<IEnumerable<CustomerViewModel>> GetAllInactive([FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateToken(authorization))
+            {
+                var customers = await _customerRepo.GetAllInactiveAsync();
+                return customers.Select(x => new CustomerViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    CardNumber = x.CardNumber,
+                });
+            }
+            return new List<CustomerViewModel>();
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken ,CustomerViewModel customer)
         {
             var dataValidation = new DataValidation();
-            if(await _userValidation.ValidateToken(authToken) && dataValidation.Validate(customer))
+            if(await _userValidation.ValidateToken(authToken) && _dataValidation.Validate(customer))
             {
                 var newCustomer = new Customer()
                 {
@@ -60,9 +77,9 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active/{id}")]
-        public async Task<CustomerViewModel> GetActiveCustomer([FromQuery] Guid id, Guid authorization)
+        public async Task<CustomerViewModel> GetActiveCustomer([FromQuery] Guid id, [FromHeader]Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateToken(authorization))
             {
                 var customer = await _customerRepo.GetByIdAsync(id);
                 if (customer is not null)
@@ -78,6 +95,67 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return new CustomerViewModel();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] Guid id, [FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateToken(authorization))
+            {
+                try
+                {
+                    await _customerRepo.DeleteAsync(id);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return BadRequest();
+                }
+            }
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromHeader] Guid authorization, [FromBody] CustomerViewModel customerView)
+        {
+
+            if(await _userValidation.ValidateToken(authorization))
+            {
+                try
+                {
+                    var customer = await _customerRepo.GetByIdAsync(customerView.Id);
+                    if (customer is not null && _dataValidation.Validate(customerView))
+                    {
+                        customer.Name = customerView.Name;
+                        customer.Surname = customerView.Surname;
+                        customer.CardNumber = customerView.CardNumber;
+                        await _customerRepo.UpdateAsync(customer.Id, customer);
+                        return Ok();
+                    }
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return NotFound();
+                }
+            }
+            
+            return BadRequest();
+            
+        }
+
+        [HttpPut("undo/{id}")]
+        public async Task<IActionResult> Undo([FromQuery] Guid id, [FromHeader] Guid authorization)
+        {
+            if(await _userValidation.ValidateToken(authorization))
+            {
+                var customer = await _customerRepo.GetByIdAsync(id);
+                if(customer is not null)
+                {
+                    customer.IsActive = true;
+                    return Ok();
+                } 
+            }
+
+            return BadRequest();
         }
     }
 }

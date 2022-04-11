@@ -38,10 +38,12 @@ else
                     <td>@customer.Name</td>
                     <td>@customer.Surname</td>
                     <td>@customer.CardNumber</td>
-                    if(!deletedList)
+                    @if(!deletedList)
                     {
-                        <td><button class="btn btn-success" @onclick="()=>EditCustomer(customer)" >Edit</button></td>
-                        <td><button class="btn btn-danger" @onclick="() => DeleteCustomer(customer)">Delete</button></td>
+                            <td>
+                                <button class="btn btn-success" @onclick="()=>EditCustomer(customer)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer)">Delete</button>
+                            </td>
                     }
                     else
                     {
@@ -77,9 +79,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var strToken = await localStorage.GetItemAsync<string>("authToken");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(strToken.Replace("\"", ""));
         customers = await httpClient.GetFromJsonAsync<List<CustomerViewModel>>("/customer/active");
+        populate();
         _isLoading = false;
     }
 
@@ -90,26 +91,61 @@ else
 
     public async void EditCustomer(CustomerViewModel customer)
     {
-
+        navManager.NavigateTo($"/newcustomer/{customer.Id}");
     }
 
     public async void DeleteCustomer(CustomerViewModel customer)
     {
+        var response = await httpClient.DeleteAsync($"/customer/{customer.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            customers.Remove(customer);
+            this.StateHasChanged();
+            return;
+        }
 
+        jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void Undo(CustomerViewModel customer)
     {
+        var response = await httpClient.PutAsJsonAsync($"/customer/undo/{customer.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            customers.Remove(customer);
+            this.StateHasChanged();
+            return;
+        }
 
+        jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void ShowDeletedCustomers()
     {
-    
+        customers = await httpClient.GetFromJsonAsync<List<CustomerViewModel>>("/customer/inactive");
+        deletedList = true;
+        this.StateHasChanged();
     }
 
     public async void ShowActiveCustomers()
     {
-    
+        customers = await httpClient.GetFromJsonAsync<List<CustomerViewModel>>("/customer/active");
+        deletedList = false;
+        this.StateHasChanged();
+    }
+
+    // Mock Data
+    public async void populate()
+    {
+        for(int i = 0; i < 10; i++)
+        {
+            customers.Add(new CustomerViewModel()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "John",
+                    Surname = "Eskioglou",
+                    CardNumber = "A123495890384"
+                });
+        }
     }
 }

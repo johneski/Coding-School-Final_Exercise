@@ -39,10 +39,12 @@ else
                     <td>@item.Description</td>
                     <td>@item.Cost</td>
                     <td>@item.Price</td>
-                    if(!deletedList)
+                    @if(!deletedList)
                     {
-                        <td><button class="btn btn-success" @onclick="()=>EditItem(item)" >Edit</button></td>
-                        <td><button class="btn btn-danger" @onclick="() => DeleteItem(item)">Delete</button></td>
+                            <td>
+                                <button class="btn btn-success" @onclick="()=>EditItem(item)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteItem(item)">Delete</button>
+                            </td>
                     }
                     else
                     {
@@ -78,8 +80,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var strToken = await localStorage.GetItemAsync<string>("authToken");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(strToken.Replace("\"", ""));
         items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/active");
         _isLoading = false;
     }
@@ -91,7 +91,7 @@ else
 
     public async void EditItem(ItemViewModel item)
     {
-
+        navManager.NavigateTo($"/newitem/{item.Id}");
     }
 
     public async void DeleteItem(ItemViewModel item)

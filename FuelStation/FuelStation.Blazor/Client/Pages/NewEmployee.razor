@@ -72,7 +72,7 @@
     {
         if(id is not null && Guid.Empty != id)
         {
-            var authToken = await localStorage.GetItemAsStringAsync("authoToken");
+            var authToken = await localStorage.GetItemAsStringAsync("authToken");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
             employee = await httpClient.GetFromJsonAsync<EmployeeViewModel>($"/employee/active/{id}");
         }
