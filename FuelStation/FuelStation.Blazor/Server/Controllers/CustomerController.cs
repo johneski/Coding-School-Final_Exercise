@@ -21,13 +21,20 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active")]
-        public async Task<List<Customer>> GetAllActive([FromHeader] Guid authToken)
+        public async Task<IEnumerable<CustomerViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if (await _validation.ValidateToken(authToken))
+            if (await _validation.ValidateToken(authorization))
             {
-                return await _customerRepo.GetAllActiveAsync();
+                var customers = await _customerRepo.GetAllActiveAsync();
+                return customers.Select(x => new CustomerViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    CardNumber = x.CardNumber,
+                });
             }
-            return null;
+            return new List<CustomerViewModel>();
         }
 
         [HttpPost]

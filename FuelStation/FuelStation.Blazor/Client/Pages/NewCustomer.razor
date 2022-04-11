@@ -1,0 +1,63 @@
+﻿@page "/newcustomer"
+@inject HttpClient httpClient
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@inject ILocalStorageService localStorage
+
+
+<h3 class="mb-5">New Customer</h3>
+
+<EditForm Model="@customer" OnValidSubmit="@Save">
+    <div class="row">
+        <div class="col-1">
+             <label for="name" class="form-label">Name</label>
+        </div>
+        <div class="col-3">
+            <InputText @bind-Value=customer.Name name="name" class="form-control" pattern="[A-Za-z]{3,15}" title="It must be between 3 and 15 characters long. Only characters." />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <label class="form-label">SurName</label>
+        </div>
+        <div class="col-3">
+            <InputText @bind-Value=customer.Surname class="form-control" pattern="[A-Za-z]{3,20}" title="It must be between 3 and 20 characters long. Only characters." />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <label for="cardNumber" class="form-label">CardNumber</label>
+        </div>
+        <div class="col-3">
+            <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" npattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <button type="submit" class="btn btn-primary mt-3">Save</button>
+        </div>
+        <div class="col-1">
+            <button class="btn btn-danger mt-3" @onclick="GoBack">Cancel</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private CustomerViewModel customer { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async void Save()
+    {
+
+    }
+
+    private async void GoBack()
+    {
+        navManager.NavigateTo("/customers");
+    }
+
+}
