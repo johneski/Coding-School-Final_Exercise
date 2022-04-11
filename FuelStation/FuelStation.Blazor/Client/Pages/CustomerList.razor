@@ -109,7 +109,7 @@ else
 
     public async void Undo(CustomerViewModel customer)
     {
-        var response = await httpClient.PutAsJsonAsync($"/customer/undo/{customer.Id}");
+        var response = await httpClient.PutAsJsonAsync<CustomerViewModel>($"/customer/undo/{customer.Id}", customer);
         if (response.IsSuccessStatusCode)
         {
             customers.Remove(customer);
