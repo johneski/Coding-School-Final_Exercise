@@ -1,4 +1,5 @@
 ﻿@page "/newitem"
+@using FuelStation.Blazor.Shared.Enums
 @inject HttpClient httpClient
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
@@ -7,29 +8,50 @@
 
 <h3 class="mb-5">New Item</h3>
 
-<EditForm Model="@customer" OnValidSubmit="@Save">
+<EditForm Model="@item" OnValidSubmit="@Save">
     <div class="row">
         <div class="col-1">
-             <label for="name" class="form-label">Name</label>
+             <label for="code" class="form-label">Code</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=customer.Name name="name" class="form-control" pattern="[A-Za-z]{3,15}" title="It must be between 3 and 15 characters long. Only characters." />
+            <InputText @bind-Value=item.Code name="code" class="form-control" pattern="[A-Za-z0-9]{1,15}" title="It must be at most 3 and 15 characters long." />
         </div>
     </div>
     <div class="row">
         <div class="col-1">
-            <label class="form-label">SurName</label>
+            <label for="description" class="form-label">Description</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=customer.Surname class="form-control" pattern="[A-Za-z]{3,20}" title="It must be between 3 and 20 characters long. Only characters." />
+            <InputText @bind-Value=item.Description class="form-control" name="description" pattern="[A-Za-z]{1,20}" title="It must be at most 20 characters long." />
         </div>
     </div>
     <div class="row">
         <div class="col-1">
-            <label for="cardNumber" class="form-label">CardNumber</label>
+            <label for="type" class="form-label">Type</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" npattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+            <InputSelect @bind-Value=item.ItemType class="form-control" name="type">
+                @foreach(var type in Enum.GetValues(typeof(ItemType)))
+                {
+                    <option value="@type">@type</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <label for="cost" class="form-label">Cost</label>
+        </div>
+        <div class="col-3">
+            <InputNumber @bind-Value=item.Cost class="form-control" name="cost" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <label for="price" class="form-label">Price</label>
+        </div>
+        <div class="col-3">
+            <InputNumber @bind-Value=item.Price class="form-control" name="price" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
         </div>
     </div>
     <div class="row">
@@ -43,7 +65,7 @@
 </EditForm>
 
 @code {
-    private CustomerViewModel customer { get; set; } = new();
+    private ItemViewModel item { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
