@@ -51,15 +51,30 @@
         if(id is not null && Guid.Empty != id)
         {
             var authToken = await localStorage.GetItemAsStringAsync("authToken");
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken.Replace(""));
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
-            populate();
+            //populate();
         }
     }
 
     private async void Save()
     {
+        HttpResponseMessage response;
+        if (id is null || id == Guid.Empty)
+        {
+            response = await httpClient.PostAsJsonAsync<CustomerViewModel>("/customer", customer);
+        }
+        else
+        {
+            response = await httpClient.PutAsJsonAsync<CustomerViewModel>("/customer", customer);
+        }
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong!");
+            return;
+        }
 
+        navManager.NavigateTo("customers", false);
     }
 
     private async void GoBack()

@@ -8,7 +8,7 @@ namespace FuelStation.EF.Models
 {
     public class UserCredentials
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Guid EmployeeId { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }

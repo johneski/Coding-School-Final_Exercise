@@ -8,7 +8,7 @@ namespace FuelStation.EF.Models
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public bool IsActive { get; set; } = true;
     }
 }

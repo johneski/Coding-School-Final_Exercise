@@ -19,7 +19,6 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<Guid> ValidateUser([FromHeader] string username,[FromHeader] string password)
         {
-            
             var employee = await _userValidation.ValidateUser(username, password);
             if (employee is not null)
             {                

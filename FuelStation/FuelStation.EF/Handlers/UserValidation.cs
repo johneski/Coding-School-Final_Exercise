@@ -51,6 +51,23 @@ namespace FuelStation.EF.Handlers
 
         public async Task<Employee?> ValidateUser(string username, string password)
         {
+            if((await _context.Employees.ToListAsync()).Count() == 0)
+            {
+                var employee = new Employee()
+                {
+                    Name = "admin",
+                    Surname = "admin",
+                    EmployeeType = Blazor.Shared.Enums.EmployeeType.Manager
+                };
+                employee.Credentials = new UserCredentials()
+                {
+                    EmployeeId = employee.Id,
+                    UserName = username,
+                    Password = password,
+                };
+                _context.Employees.Add(employee);
+                
+            }
             var credentials = await _context.UserCredentials.AsNoTracking().SingleOrDefaultAsync(x => x.UserName == username && x.Password == password);            
             if(credentials is not null)
                 return await _context.Employees.AsNoTracking().SingleOrDefaultAsync(x => x.Id == credentials.EmployeeId);

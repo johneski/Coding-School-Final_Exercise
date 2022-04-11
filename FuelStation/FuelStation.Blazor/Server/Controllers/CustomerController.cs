@@ -59,7 +59,6 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken ,CustomerViewModel customer)
         {
-            var dataValidation = new DataValidation();
             if(await _userValidation.ValidateToken(authToken) && _dataValidation.Validate(customer))
             {
                 var newCustomer = new Customer()
