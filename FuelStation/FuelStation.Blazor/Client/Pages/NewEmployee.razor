@@ -70,20 +70,20 @@
 @code {
     [Parameter] public Guid? id { get; set; }
     private EmployeeViewModel employee { get; set; } = new();
-
+    private Tools tools { get; set; } = new();
+    
     protected override async Task OnInitializedAsync()
     {
         if(id is not null && Guid.Empty != id)
         {
-            var authToken = await localStorage.GetItemAsStringAsync("authToken");
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
+            await tools.LoadAuthToken(httpClient, localStorage);
             employee = await httpClient.GetFromJsonAsync<EmployeeViewModel>($"/employee/active/{id}");
         }
     }
 
     private async void Save()
     {
-
+        await tools.LoadAuthToken(httpClient, localStorage);
     }
 
     private async void GoBack()

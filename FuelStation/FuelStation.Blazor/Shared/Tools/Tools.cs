@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 
 namespace FuelStation.Blazor.Shared.Tools
 {
@@ -21,5 +23,12 @@ namespace FuelStation.Blazor.Shared.Tools
 
             return cardNumber;
         }
+
+        public async Task LoadAuthToken(HttpClient client, ILocalStorageService localStorage)
+        {
+            var authToken = await localStorage.GetItemAsStringAsync("authToken");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken.Replace("\"", ""));
+        }
+
     }
 }

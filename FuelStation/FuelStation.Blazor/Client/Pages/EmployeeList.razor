@@ -82,9 +82,11 @@ else
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
     private List<EmployeeViewModel>? employees { get; set; }
+    private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
         employees = await httpClient.GetFromJsonAsync<List<EmployeeViewModel>>("/employee/active");
         _isLoading = false;
     }

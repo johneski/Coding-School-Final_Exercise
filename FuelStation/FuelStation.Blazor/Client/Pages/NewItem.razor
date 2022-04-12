@@ -70,20 +70,23 @@
 @code {
     [Parameter] public Guid? id { get; set; }
     private ItemViewModel item { get; set; } = new();
+    private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         if(id is not null && Guid.Empty != id)
         {
-            var authToken = await localStorage.GetItemAsStringAsync("authToken");
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken);
+            await tools.LoadAuthToken(httpClient, localStorage);
             item = await httpClient.GetFromJsonAsync<ItemViewModel>($"/item/active/{id}");
         }
     }
 
     private async void Save()
     {
-
+        await tools.LoadAuthToken(httpClient, localStorage);
+        HttpResponseMessage response = await httpClient.PostAsJsonAsync<ItemViewModel>("/item", item);
+        response.EnsureSuccessStatusCode();
+        navManager.NavigateTo("/items");
     }
 
     private async void GoBack()

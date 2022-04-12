@@ -48,12 +48,14 @@
 @code {
     [Parameter] public Guid? id { get; set; }
     private CustomerViewModel customer { get; set; } = new();
+    private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
         if(id is not null && Guid.Empty != id)
         {
-            var authToken = await localStorage.GetItemAsStringAsync("authToken");
+            
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
         }
         else
@@ -64,6 +66,7 @@
 
     private async void Save()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
         HttpResponseMessage response;
         if (id is null || id == Guid.Empty)
         {

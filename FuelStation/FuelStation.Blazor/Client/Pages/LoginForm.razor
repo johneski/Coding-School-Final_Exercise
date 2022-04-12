@@ -47,10 +47,8 @@
             return;
         }
 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken.ToString("D"));
-
         _authorized = true;
-        //await localStorage.SetItemAsync("authToken", authToken);
+        await localStorage.SetItemAsync("authToken", authToken);
         navManager.NavigateTo("/customers");
     }
 

@@ -77,9 +77,11 @@ else
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
     private List<ItemViewModel>? items { get; set; }
+    private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
         items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/active");
         _isLoading = false;
     }

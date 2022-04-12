@@ -24,17 +24,38 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active")]
         public async Task<IEnumerable<ItemViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if(await _userValidation.ValidateTokenAsync(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var items = await _itemRepo.GetAllActiveAsync();
                 return items.Select(x => new ItemViewModel()
-                { 
+                {
                     Id = x.Id,
-                    Description = x.Description, 
+                    Description = x.Description,
+                    Code = x.Code,
                     ItemType = x.ItemType,
                     Cost = x.Cost,
                     Price = x.Price,
-                 });
+                });
+            }
+
+            return new List<ItemViewModel>();
+        }
+
+        [HttpGet("inactive")]
+        public async Task<IEnumerable<ItemViewModel>> GetAllInactive([FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var items = await _itemRepo.GetAllInactiveAsync();
+                return items.Select(x => new ItemViewModel()
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    Code = x.Code,
+                    ItemType = x.ItemType,
+                    Cost = x.Cost,
+                    Price = x.Price,
+                });
             }
 
             return new List<ItemViewModel>();
@@ -43,10 +64,10 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active/{id}")]
         public async Task<ItemViewModel> GetActiveItem([FromQuery] Guid id, Guid authorization)
         {
-            if(await _userValidation.ValidateTokenAsync(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var item = await _itemRepo.GetByIdAsync(id);
-                if(item is not null)
+                if (item is not null)
                 {
                     return new ItemViewModel()
                     {
@@ -61,6 +82,24 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return new ItemViewModel();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromHeader]Guid authorization, [FromBody] ItemViewModel itemView)
+        {
+            if(_dataValidation.Validate(itemView) && await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var item = new Item();
+                item.Description = itemView.Description;
+                item.Code = itemView.Code;
+                item.Cost = itemView.Cost;
+                item.ItemType = itemView.ItemType;
+                item.Price = itemView.Price;
+
+                await _itemRepo.CreateAsync(item);
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

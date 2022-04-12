@@ -29,5 +29,10 @@ namespace FuelStation.EF.Handlers
                 return false;
             return true;
         }
+
+        public bool Validate(ItemViewModel item)
+        {
+            return true;
+        }
     }
 }
