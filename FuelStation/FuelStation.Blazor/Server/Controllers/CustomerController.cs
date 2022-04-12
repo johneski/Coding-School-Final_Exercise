@@ -117,7 +117,7 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromHeader] Guid authorization, [FromBody] CustomerViewModel customerView)
+        public async Task<IActionResult> Update([FromHeader] Guid authorization, [FromBody] CustomerViewModel customerView)
         {
 
             if(await _userValidation.ValidateTokenAsync(authorization))

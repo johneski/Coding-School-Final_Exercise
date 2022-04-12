@@ -19,6 +19,12 @@
         <div class="col-3">
             <InputText @bind-Value=employee.Name name="name" class="form-control" />
         </div>
+        <div class="col-1">
+            <label for="username" class="form-label">Username</label>
+        </div>
+        <div class="col-2">
+            <InputText @bind-Value=employee.Username name="username" class="form-control"></InputText>
+        </div>
     </div>
     <div class="row">
         <div class="col-1">
@@ -26,6 +32,12 @@
         </div>
         <div class="col-3">
             <InputText @bind-Value=employee.Surname class="form-control"  />
+        </div>
+        <div class="col-1">
+            <label for="password" class="form-label">Password</label>
+        </div>
+        <div class="col-2">
+            <InputText @bind-Value=employee.Password name="password" class="form-control"></InputText>
         </div>
     </div>
     <div class="row">
@@ -89,11 +101,31 @@
     private async void Save()
     {
         await tools.LoadAuthToken(httpClient, localStorage);
+        var token = httpClient.DefaultRequestHeaders.Authorization;
+        HttpResponseMessage response;
+        if (id is null || id == Guid.Empty)
+        {
+            response = await httpClient.PostAsJsonAsync<EmployeeViewModel>("/employee", employee);
+        }
+        else
+        {
+            response = await httpClient.PutAsJsonAsync<EmployeeViewModel>("/employee", employee);
+        }
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong!");
+            return;
+        }
+
+        navManager.NavigateTo("employees", false);
     }
 
     private async void GoBack()
     {
         navManager.NavigateTo("/employees");
     }
+
+
 
 }

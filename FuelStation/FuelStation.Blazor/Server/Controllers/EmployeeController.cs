@@ -15,10 +15,11 @@ namespace FuelStation.Blazor.Server.Controllers
         private readonly UserValidation _userValidation;
         private readonly DataValidation _dataValidation;
 
-        public EmployeeController(IEntityRepo<Employee> employeeRepo, UserValidation validation)
+        public EmployeeController(IEntityRepo<Employee> employeeRepo, UserValidation validation, DataValidation dataValidation)
         {
             _employeeRepo = employeeRepo;
             _userValidation = validation;
+            _dataValidation = dataValidation;
         }
 
         [HttpGet("active")]
@@ -42,9 +43,9 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken, EmployeeViewModel employee)
+        public async Task<IActionResult> CreateEmployee([FromHeader] Guid authorization, EmployeeViewModel employee)
         {
-            if (await _userValidation.ValidateTokenAsync(authToken) && _dataValidation.Validate(employee))
+            if (await _userValidation.ValidateTokenAsync(authorization) && _dataValidation.Validate(employee))
             {
                 var newEmployee = new Employee()
                 {
@@ -55,7 +56,13 @@ namespace FuelStation.Blazor.Server.Controllers
                     HireDateStart = employee.HireDateStart,
                     SalaryPerMonth = employee.SalaryPerMonth
                 };
-
+                var credentials = new UserCredentials()
+                {
+                    EmployeeId = employee.Id,
+                    UserName = employee.Username,
+                    Password = employee.Password,
+                };
+                newEmployee.Credentials = credentials;
                 await _employeeRepo.CreateAsync(newEmployee);
                 return Ok();
             }
@@ -76,6 +83,8 @@ namespace FuelStation.Blazor.Server.Controllers
                         Id = employee.Id,
                         Name = employee.Name,
                         Surname = employee.Surname,
+                        Username = employee.Credentials.UserName,
+                        Password = employee.Credentials.Password,
                         EmployeeType = employee.EmployeeType,
                         HireDateEnd = employee.HireDateEnd,
                         HireDateStart = employee.HireDateStart,
@@ -123,6 +132,39 @@ namespace FuelStation.Blazor.Server.Controllers
                 });
             }
             return new List<EmployeeViewModel>();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromHeader] Guid authorization, [FromBody] EmployeeViewModel employeeView)
+        {
+
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                try
+                {
+                    var employee = await _employeeRepo.GetByIdAsync(employeeView.Id, true);
+                    if (employee is not null && _dataValidation.Validate(employeeView))
+                    {
+                        employee.Name = employeeView.Name;
+                        employee.Surname = employeeView.Surname;
+                        employee.EmployeeType = employeeView.EmployeeType;
+                        employee.Credentials.UserName = employeeView.Username;
+                        employee.Credentials.Password = employeeView.Password;
+                        employee.HireDateEnd = employeeView.HireDateEnd;
+                        employee.HireDateStart = employeeView.HireDateStart;
+                        employee.SalaryPerMonth = employeeView.SalaryPerMonth;
+                        await _employeeRepo.UpdateAsync(employee.Id, employee);
+                        return Ok();
+                    }
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return NotFound();
+                }
+            }
+
+            return BadRequest();
+
         }
 
         [HttpPut("undo/{id}")]

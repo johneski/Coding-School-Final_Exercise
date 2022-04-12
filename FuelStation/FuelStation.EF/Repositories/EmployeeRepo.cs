@@ -53,18 +53,20 @@ namespace FuelStation.EF.Repositories
 
         public async Task<Employee?> GetByIdAsync(Guid id, bool active)
         {
-            return await _fuelStationContext.Employees.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive == active && x.Id == id);
+            return await _fuelStationContext.Employees.AsNoTracking().Include(x => x.Credentials).SingleOrDefaultAsync(x => x.IsActive == active && x.Id == id);
         }
 
         public async Task UpdateAsync(Guid id, Employee entity)
         {
-            var employee = await _fuelStationContext.Employees.FindAsync(id);
+            var employee = await _fuelStationContext.Employees.Include(x => x.Credentials).SingleOrDefaultAsync(x => x.Id == id);
             if (employee is not null)
             {
                 employee.Name = entity.Name;
                 employee.Surname = entity.Surname;
                 employee.HireDateStart = entity.HireDateStart;
                 employee.HireDateEnd = entity.HireDateEnd;
+                employee.Credentials.UserName = entity.Credentials.UserName;
+                employee.Credentials.Password = entity.Credentials.Password;
                 employee.SalaryPerMonth = entity.SalaryPerMonth;
                 employee.EmployeeType = entity.EmployeeType;
                 employee.IsActive = entity.IsActive;

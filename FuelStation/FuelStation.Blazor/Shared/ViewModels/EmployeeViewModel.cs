@@ -17,6 +17,11 @@ namespace FuelStation.Blazor.Shared.ViewModels
         [Required]
         [RegularExpression(@"^[a-zA-Z''-'\s]{1,20}$", ErrorMessage = "Number and symbols are not allowed.")]
         public string Surname { get; set; }
+        [Required]        
+        public string Username { get; set; }
+        [Required]
+        [MinLength(8)]
+        public string Password { get; set; }
         public DateTime HireDateStart { get; set; }
         public DateTime? HireDateEnd { get; set; }
         [Required]        
