@@ -59,9 +59,9 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken ,CustomerViewModel customer)
+        public async Task<IActionResult> CreateCustomer([FromHeader] Guid authorization, CustomerViewModel customer)
         {
-            if(await _userValidation.ValidateTokenAsync(authToken) && _dataValidation.Validate(customer))
+            if(await _userValidation.ValidateTokenAsync(authorization) && _dataValidation.Validate(customer))
             {
                 var newCustomer = new Customer()
                 {
@@ -78,11 +78,11 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active/{id}")]
-        public async Task<CustomerViewModel> GetActiveCustomer([FromQuery] Guid id, [FromHeader]Guid authorization)
+        public async Task<CustomerViewModel> GetActiveCustomer([FromRoute] Guid id, [FromHeader]Guid authorization)
         {
             if(await _userValidation.ValidateTokenAsync(authorization))
             {
-                var customer = await _customerRepo.GetByIdAsync(id);
+                var customer = await _customerRepo.GetByIdAsync(id, true);
                 if (customer is not null)
                 {
                     return new CustomerViewModel()
@@ -98,21 +98,22 @@ namespace FuelStation.Blazor.Server.Controllers
             return new CustomerViewModel();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] Guid id, [FromHeader] Guid authorization)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] Guid authorization)
         {
             if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 try
                 {
                     await _customerRepo.DeleteAsync(id);
+                    return Ok();
                 }
                 catch (KeyNotFoundException ex)
                 {
                     return BadRequest();
                 }
             }
-            return Ok();
+            return BadRequest();
         }
 
         [HttpPut]
@@ -123,7 +124,7 @@ namespace FuelStation.Blazor.Server.Controllers
             {
                 try
                 {
-                    var customer = await _customerRepo.GetByIdAsync(customerView.Id);
+                    var customer = await _customerRepo.GetByIdAsync(customerView.Id, true);
                     if (customer is not null && _dataValidation.Validate(customerView))
                     {
                         customer.Name = customerView.Name;
@@ -144,14 +145,15 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPut("undo/{id}")]
-        public async Task<IActionResult> Undo([FromQuery] Guid id, [FromHeader] Guid authorization)
+        public async Task<IActionResult> Undo([FromRoute] Guid id, [FromHeader] Guid authorization)
         {
             if(await _userValidation.ValidateTokenAsync(authorization))
             {
-                var customer = await _customerRepo.GetByIdAsync(id);
+                var customer = await _customerRepo.GetByIdAsync(id, false);
                 if(customer is not null)
                 {
                     customer.IsActive = true;
+                    await _customerRepo.UpdateAsync(customer.Id, customer);
                     return Ok();
                 } 
             }

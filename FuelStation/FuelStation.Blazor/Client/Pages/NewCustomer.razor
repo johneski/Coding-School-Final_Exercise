@@ -55,7 +55,7 @@
         await tools.LoadAuthToken(httpClient, localStorage);
         if(id is not null && Guid.Empty != id)
         {
-            
+
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
         }
         else
@@ -67,6 +67,7 @@
     private async void Save()
     {
         await tools.LoadAuthToken(httpClient, localStorage);
+        var token = httpClient.DefaultRequestHeaders.Authorization;
         HttpResponseMessage response;
         if (id is null || id == Guid.Empty)
         {

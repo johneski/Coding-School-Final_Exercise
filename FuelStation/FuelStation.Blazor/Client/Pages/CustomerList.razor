@@ -83,7 +83,7 @@ else
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
     private bool allowed { get; set; } = false;
-    private List<CustomerViewModel> customers { get; set; }
+    private List<CustomerViewModel> customers { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -153,18 +153,4 @@ else
         this.StateHasChanged();
     }
 
-    // Mock Data
-    public async void populate()
-    {
-        for(int i = 0; i < 10; i++)
-        {
-            customers.Add(new CustomerViewModel()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "John",
-                    Surname = "Eskioglou",
-                    CardNumber = "A123495890384"
-                });
-        }
-    }
 }

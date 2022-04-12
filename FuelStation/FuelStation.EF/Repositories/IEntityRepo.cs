@@ -11,7 +11,7 @@ namespace FuelStation.EF.Repositories
         Task<List<TEntity>> GetAllAsync();
         Task<List<TEntity>> GetAllActiveAsync();
         Task<List<TEntity>> GetAllInactiveAsync();
-        Task<TEntity?> GetByIdAsync(Guid id);
+        Task<TEntity?> GetByIdAsync(Guid id, bool active);
         Task CreateAsync(TEntity entity);
         Task UpdateAsync(Guid id, TEntity entity);
         Task DeleteAsync(Guid id);        

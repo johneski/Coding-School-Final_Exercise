@@ -71,7 +71,7 @@
     [Parameter] public Guid? id { get; set; }
     private EmployeeViewModel employee { get; set; } = new();
     private Tools tools { get; set; } = new();
-    
+
     protected override async Task OnInitializedAsync()
     {
         if(id is not null && Guid.Empty != id)
@@ -79,6 +79,11 @@
             await tools.LoadAuthToken(httpClient, localStorage);
             employee = await httpClient.GetFromJsonAsync<EmployeeViewModel>($"/employee/active/{id}");
         }
+        else
+        {
+            employee.HireDateStart = DateTime.Now;
+        }
+
     }
 
     private async void Save()

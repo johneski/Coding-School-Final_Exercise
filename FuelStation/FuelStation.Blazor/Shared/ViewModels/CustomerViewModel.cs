@@ -12,10 +12,10 @@ namespace FuelStation.Blazor.Shared.ViewModels
         
         public Guid Id { get; set; }
         [Required]
-        [RegularExpression("[A-Za-z].{3,20}", ErrorMessage = "Number and symbols are not allowed.")]
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,20}$", ErrorMessage = "Number and symbols are not allowed.")]
         public string Name { get; set; }
         [Required]
-        [RegularExpression("[A-Za-z].{3,20}", ErrorMessage = "Number and symbols are not allowed.")]
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,20}$", ErrorMessage = "Number and symbols are not allowed.")]
         public string Surname { get; set; }
         public string Fullname { get => $"{Name} {Surname}"; }
         [Required]

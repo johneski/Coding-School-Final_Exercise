@@ -76,7 +76,7 @@ else
 @code {
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
-    private List<ItemViewModel>? items { get; set; }
+    private List<ItemViewModel>? items { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -98,21 +98,45 @@ else
 
     public async void DeleteItem(ItemViewModel item)
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+        var response = await httpClient.DeleteAsync($"/item/{item.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            items.Remove(item);
+            this.StateHasChanged();
+            return;
+        }
 
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void Undo(ItemViewModel item)
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+        var response = await httpClient.PutAsJsonAsync<ItemViewModel>($"/item/undo/{item.Id}", item);
+        if (response.IsSuccessStatusCode)
+        {
+            items.Remove(item);
+            this.StateHasChanged();
+            return;
+        }
 
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void ShowDeletedItems()
     {
-    
+        await tools.LoadAuthToken(httpClient, localStorage);
+        items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/inactive");
+        deletedList = true;
+        this.StateHasChanged();
     }
 
     public async void ShowActiveItems()
     {
-    
+        await tools.LoadAuthToken(httpClient, localStorage);
+        items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/active");
+        deletedList = false;
+        this.StateHasChanged();
     }
 }

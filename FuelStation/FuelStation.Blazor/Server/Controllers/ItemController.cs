@@ -62,11 +62,11 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active/{id}")]
-        public async Task<ItemViewModel> GetActiveItem([FromQuery] Guid id, Guid authorization)
+        public async Task<ItemViewModel> GetActiveItem([FromRoute] Guid id, Guid authorization)
         {
             if (await _userValidation.ValidateTokenAsync(authorization))
             {
-                var item = await _itemRepo.GetByIdAsync(id);
+                var item = await _itemRepo.GetByIdAsync(id, true);
                 if (item is not null)
                 {
                     return new ItemViewModel()
@@ -99,6 +99,41 @@ namespace FuelStation.Blazor.Server.Controllers
                 await _itemRepo.CreateAsync(item);
                 return Ok();
             }
+            return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                try
+                {
+                    await _itemRepo.DeleteAsync(id);
+                    return Ok();
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return BadRequest();
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPut("undo/{id}")]
+        public async Task<IActionResult> Undo([FromRoute] Guid id, [FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var item = await _itemRepo.GetByIdAsync(id, false);
+                if (item is not null)
+                {
+                    item.IsActive = true;
+                    await _itemRepo.UpdateAsync(item.Id, item);
+                    return Ok();
+                }
+            }
+
             return BadRequest();
         }
     }

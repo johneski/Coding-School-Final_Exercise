@@ -81,7 +81,7 @@ else
 @code {
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
-    private List<EmployeeViewModel>? employees { get; set; }
+    private List<EmployeeViewModel>? employees { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -103,21 +103,45 @@ else
 
     public async void DeleteEmployee(EmployeeViewModel employee)
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+        var response = await httpClient.DeleteAsync($"/employee/{employee.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            employees.Remove(employee);
+            this.StateHasChanged();
+            return;
+        }
 
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void Undo(EmployeeViewModel employee)
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+        var response = await httpClient.PutAsJsonAsync<EmployeeViewModel>($"/employee/undo/{employee.Id}", employee);
+        if (response.IsSuccessStatusCode)
+        {
+            employees.Remove(employee);
+            this.StateHasChanged();
+            return;
+        }
 
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void ShowDeletedEmployees()
     {
-    
+        await tools.LoadAuthToken(httpClient, localStorage);
+        employees = await httpClient.GetFromJsonAsync<List<EmployeeViewModel>>("/employee/inactive");
+        deletedList = true;
+        this.StateHasChanged();
     }
 
     public async void ShowActiveEmployees()
     {
-    
+        await tools.LoadAuthToken(httpClient, localStorage);
+        employees = await httpClient.GetFromJsonAsync<List<EmployeeViewModel>>("/employee/active");
+        deletedList = false;
+        this.StateHasChanged();
     }
 }

@@ -64,11 +64,11 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active/{id}")]
-        public async Task<EmployeeViewModel> GetActiveCustomer([FromQuery] Guid id, Guid authorization)
+        public async Task<EmployeeViewModel> GetActiveEmployee([FromRoute] Guid id, Guid authorization)
         {
             if (await _userValidation.ValidateTokenAsync(authorization))
             {
-                var employee = await _employeeRepo.GetByIdAsync(id);
+                var employee = await _employeeRepo.GetByIdAsync(id, true);
                 if (employee is not null)
                 {
                     return new EmployeeViewModel()
@@ -85,6 +85,61 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return new EmployeeViewModel();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                try
+                {
+                    await _employeeRepo.DeleteAsync(id);
+                    return Ok();
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return BadRequest();
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("inactive")]
+        public async Task<IEnumerable<EmployeeViewModel>> GetAllInactive([FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var employees = await _employeeRepo.GetAllInactiveAsync();
+                return employees.Select(x => new EmployeeViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    EmployeeType = x.EmployeeType,
+                    HireDateEnd = x.HireDateEnd,
+                    HireDateStart = x.HireDateStart,
+                    SalaryPerMonth = x.SalaryPerMonth
+                });
+            }
+            return new List<EmployeeViewModel>();
+        }
+
+        [HttpPut("undo/{id}")]
+        public async Task<IActionResult> Undo([FromRoute] Guid id, [FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var employee = await _employeeRepo.GetByIdAsync(id, false);
+                if (employee is not null)
+                {
+                    employee.IsActive = true;
+                    await _employeeRepo.UpdateAsync(employee.Id, employee);
+                    return Ok();
+                }
+            }
+
+            return BadRequest();
         }
     }
 }

@@ -51,9 +51,9 @@ namespace FuelStation.EF.Repositories
             return await _fuelStationContext.Employees.AsNoTracking().ToListAsync();
         }
 
-        public async Task<Employee?> GetByIdAsync(Guid id)
+        public async Task<Employee?> GetByIdAsync(Guid id, bool active)
         {
-            return await _fuelStationContext.Employees.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive && x.Id == id);
+            return await _fuelStationContext.Employees.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive == active && x.Id == id);
         }
 
         public async Task UpdateAsync(Guid id, Employee entity)

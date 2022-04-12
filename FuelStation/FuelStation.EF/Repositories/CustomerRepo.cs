@@ -20,7 +20,15 @@ namespace FuelStation.EF.Repositories
         public async Task CreateAsync(Customer entity)
         {
             await _fuelStationContext.Customers.AddAsync(entity);
-            await _fuelStationContext.SaveChangesAsync();
+            try
+            {
+                await _fuelStationContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
         }
 
         public async Task DeleteAsync(Guid id)
@@ -50,9 +58,9 @@ namespace FuelStation.EF.Repositories
             return await _fuelStationContext.Customers.AsNoTracking().Where(x => !x.IsActive).ToListAsync();
         }
 
-        public async Task<Customer?> GetByIdAsync(Guid id)
+        public async Task<Customer?> GetByIdAsync(Guid id, bool active)
         {
-            return await _fuelStationContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive && x.Id == id);
+            return await _fuelStationContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.IsActive == active && x.Id == id);
         }
 
         public async Task UpdateAsync(Guid id, Customer entity)
