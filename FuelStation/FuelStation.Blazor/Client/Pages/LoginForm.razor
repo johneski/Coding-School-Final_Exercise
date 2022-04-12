@@ -30,10 +30,14 @@
         {
             return;
         }
+        HttpResponseMessage response;
+        using(var request = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress + "validation"))
+        {
+            request.Headers.Add("username", login.Username);
+            request.Headers.Add("password", login.Password);
+            response = await client.SendAsync(request);
+        }
 
-        client.DefaultRequestHeaders.Add("username", login.Username);
-        client.DefaultRequestHeaders.Add("password", login.Password);
-        HttpResponseMessage response = await client.PostAsJsonAsync("validation", "");
         var stringToken = await response.Content.ReadAsStringAsync();
         Guid authToken = Guid.Parse(stringToken.Replace("\"", ""));
 

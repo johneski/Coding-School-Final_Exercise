@@ -24,7 +24,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active")]
         public async Task<IEnumerable<ItemViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if(await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateTokenAsync(authorization))
             {
                 var items = await _itemRepo.GetAllActiveAsync();
                 return items.Select(x => new ItemViewModel()
@@ -43,7 +43,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active/{id}")]
         public async Task<ItemViewModel> GetActiveItem([FromQuery] Guid id, Guid authorization)
         {
-            if(await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateTokenAsync(authorization))
             {
                 var item = await _itemRepo.GetByIdAsync(id);
                 if(item is not null)

@@ -19,13 +19,15 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<Guid> ValidateUser([FromHeader] string username,[FromHeader] string password)
         {
-            var employee = await _userValidation.ValidateUser(username, password);
+            var employee = await _userValidation.ValidateUserAsync(username, password);
             if (employee is not null)
             {                
-                return await _userValidation.CreateToken(employee.Id);
+                return await _userValidation.CreateTokenAsync(employee.Id);
             }
 
             return Guid.NewGuid();
         }
+
+        
     }
 }

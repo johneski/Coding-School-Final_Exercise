@@ -24,7 +24,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active")]
         public async Task<IEnumerable<EmployeeViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var employees = await _employeeRepo.GetAllActiveAsync();
                 return employees.Select(x => new EmployeeViewModel()
@@ -44,7 +44,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken, EmployeeViewModel employee)
         {
-            if (await _userValidation.ValidateToken(authToken) && _dataValidation.Validate(employee))
+            if (await _userValidation.ValidateTokenAsync(authToken) && _dataValidation.Validate(employee))
             {
                 var newEmployee = new Employee()
                 {
@@ -66,7 +66,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active/{id}")]
         public async Task<EmployeeViewModel> GetActiveCustomer([FromQuery] Guid id, Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var employee = await _employeeRepo.GetByIdAsync(id);
                 if (employee is not null)

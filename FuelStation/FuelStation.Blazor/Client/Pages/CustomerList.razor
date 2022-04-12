@@ -14,59 +14,66 @@
 @if (_isLoading)
 {
     <tr>
-    <div class="spinner-border" role="status"></div>
+        <div class="spinner-border" role="status"></div>
     </tr>
 }
 else
 {
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Surname</th>
-                
-                <th>Card Number</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(customers.Count() != 0)
-            {
-                @foreach(var customer in customers)
-                {
-                <tr>
-                    <td>@customer.Name</td>
-                    <td>@customer.Surname</td>
-                    <td>@customer.CardNumber</td>
-                    @if(!deletedList)
-                    {
-                            <td>
-                                <button class="btn btn-success" @onclick="()=>EditCustomer(customer)">Edit</button>
-                                <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer)">Delete</button>
-                            </td>
-                    }
-                    else
-                    {
-                        <td><button class="btn btn-danger" @onclick="() => Undo(customer)">Undo</button></td>
-                    }
-
-                </tr>
-                }
-            }            
-        </tbody>
-    </table>
-    @if (!deletedList)
+    @if (allowed)
     {
-        <div class="navbar navbar-default navbar-fixed-bottom">
-            <div class="container">
-        <button class="btn btn-warning btn-sm" @onclick="() => ShowDeletedCustomers()">Show Deleted Customers</button>
-            </div>  
-    </div>
-        
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+
+                    <th>Card Number</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (customers.Count() != 0)
+                {
+                    @foreach (var customer in customers)
+                    {
+                        <tr>
+                            <td>@customer.Name</td>
+                            <td>@customer.Surname</td>
+                            <td>@customer.CardNumber</td>
+                            @if (!deletedList)
+                            {
+                                <td>
+                                    <button class="btn btn-success" @onclick="()=>EditCustomer(customer)">Edit</button>
+                                    <button class="btn btn-danger" @onclick="() => DeleteCustomer(customer)">Delete</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td><button class="btn btn-danger" @onclick="() => Undo(customer)">Undo</button></td>
+                            }
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @if (!deletedList)
+        {
+            <div class="navbar navbar-default navbar-fixed-bottom">
+                <div class="container">
+                    <button class="btn btn-warning btn-sm" @onclick="() => ShowDeletedCustomers()">Show Deleted Customers</button>
+                </div>
+            </div>
+
+        }
+        else
+        {
+            <td><button class="btn btn-secondary" @onclick="()=>ShowActiveCustomers()">Back</button></td>
+        }
     }
     else
     {
-       <td><button class="btn btn-secondary" @onclick="()=>ShowActiveCustomers()">Back</button></td> 
+        <h1>You are not allowed to see this page!!</h1>
     }
 
 }
@@ -75,12 +82,17 @@ else
 @code {
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
+    private bool allowed { get; set; } = false;
     private List<CustomerViewModel> customers { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        customers = await httpClient.GetFromJsonAsync<List<CustomerViewModel>>("/customer/active");
-        populate();
+        allowed = await httpClient.GetFromJsonAsync<bool>("customer/authorization");
+        if (allowed)
+        {
+            customers = await httpClient.GetFromJsonAsync<List<CustomerViewModel>>("/customer/active");    
+        }
+        
         _isLoading = false;
     }
 
@@ -104,7 +116,7 @@ else
             return;
         }
 
-        jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void Undo(CustomerViewModel customer)
@@ -117,7 +129,7 @@ else
             return;
         }
 
-        jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
+        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
     }
 
     public async void ShowDeletedCustomers()

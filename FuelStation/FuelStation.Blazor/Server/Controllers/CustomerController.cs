@@ -1,4 +1,5 @@
 ﻿using FuelStation.EF.Handlers;
+using FuelStation.Blazor.Shared.Enums;
 using FuelStation.EF.Models;
 using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active")]
         public async Task<IEnumerable<CustomerViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var customers = await _customerRepo.GetAllActiveAsync();
                 return customers.Select(x => new CustomerViewModel()
@@ -42,7 +43,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("inactive")]
         public async Task<IEnumerable<CustomerViewModel>> GetAllInactive([FromHeader] Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var customers = await _customerRepo.GetAllInactiveAsync();
                 return customers.Select(x => new CustomerViewModel()
@@ -59,7 +60,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromHeader] Guid authToken ,CustomerViewModel customer)
         {
-            if(await _userValidation.ValidateToken(authToken) && _dataValidation.Validate(customer))
+            if(await _userValidation.ValidateTokenAsync(authToken) && _dataValidation.Validate(customer))
             {
                 var newCustomer = new Customer()
                 {
@@ -78,7 +79,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpGet("active/{id}")]
         public async Task<CustomerViewModel> GetActiveCustomer([FromQuery] Guid id, [FromHeader]Guid authorization)
         {
-            if(await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateTokenAsync(authorization))
             {
                 var customer = await _customerRepo.GetByIdAsync(id);
                 if (customer is not null)
@@ -99,7 +100,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] Guid id, [FromHeader] Guid authorization)
         {
-            if (await _userValidation.ValidateToken(authorization))
+            if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 try
                 {
@@ -117,7 +118,7 @@ namespace FuelStation.Blazor.Server.Controllers
         public async Task<IActionResult> Put([FromHeader] Guid authorization, [FromBody] CustomerViewModel customerView)
         {
 
-            if(await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateTokenAsync(authorization))
             {
                 try
                 {
@@ -144,7 +145,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPut("undo/{id}")]
         public async Task<IActionResult> Undo([FromQuery] Guid id, [FromHeader] Guid authorization)
         {
-            if(await _userValidation.ValidateToken(authorization))
+            if(await _userValidation.ValidateTokenAsync(authorization))
             {
                 var customer = await _customerRepo.GetByIdAsync(id);
                 if(customer is not null)
@@ -155,6 +156,19 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("authorization")]
+        public async Task<bool> EmployeeAuthorization([FromHeader] Guid authorization)
+        {
+            var employeeType = await _userValidation.GetEmployeeTypeAsync(authorization);
+            if (employeeType is not null && 
+                (employeeType == EmployeeType.Manager || employeeType == EmployeeType.Cashier))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

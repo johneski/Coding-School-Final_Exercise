@@ -19,6 +19,7 @@ namespace FuelStation.EF.Configurations
             builder.Property(employee => employee.HireDateEnd).IsRequired();
             builder.Property(employee => employee.SalaryPerMonth).HasPrecision(9, 2);
             builder.Property(employee => employee.EmployeeType).IsRequired();
+            builder.Property(employee => employee.HireDateEnd).IsRequired(false);
 
         }
     }
