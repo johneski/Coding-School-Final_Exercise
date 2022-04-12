@@ -64,7 +64,7 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpGet("active/{id}")]
-        public async Task<EmployeeViewModel> GetActiveEmployee([FromRoute] Guid id, Guid authorization)
+        public async Task<EmployeeViewModel> GetActiveEmployee([FromRoute] Guid id, [FromHeader] Guid authorization)
         {
             if (await _userValidation.ValidateTokenAsync(authorization))
             {

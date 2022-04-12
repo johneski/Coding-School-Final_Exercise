@@ -57,9 +57,21 @@ namespace FuelStation.EF.Repositories
             return await _fuelStationContext.Items.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id && x.IsActive == active);
         }
 
-        public Task UpdateAsync(Guid id, Item entity)
+        public async Task UpdateAsync(Guid id, Item entity)
         {
-            throw new NotImplementedException();
+            var item = await _fuelStationContext.Items.FindAsync(id);
+            if (item is not null)
+            {
+                item.Code = entity.Code;
+                item.Description = entity.Description;
+                item.Cost = entity.Cost;
+                item.Price = entity.Price;
+                item.IsActive = entity.IsActive;
+                await _fuelStationContext.SaveChangesAsync();
+                return;
+            }
+
+            throw new KeyNotFoundException("Item not found");
         }
     }
 }
