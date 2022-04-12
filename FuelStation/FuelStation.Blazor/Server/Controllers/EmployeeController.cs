@@ -3,6 +3,7 @@ using FuelStation.EF.Models;
 using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using FuelStation.Blazor.Shared.ViewModels;
+using FuelStation.Blazor.Shared.Enums;
 
 namespace FuelStation.Blazor.Server.Controllers
 {
@@ -182,6 +183,19 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("authorization")]
+        public async Task<bool> EmployeeAuthorization([FromHeader] Guid authorization)
+        {
+            var employeeType = await _userValidation.GetEmployeeTypeAsync(authorization);
+            if (employeeType is not null &&
+                (employeeType == EmployeeType.Manager))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

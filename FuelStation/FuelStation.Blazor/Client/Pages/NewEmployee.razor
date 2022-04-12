@@ -8,48 +8,51 @@
 
 <h3 class="mb-5">New Employee</h3>
 
-<EditForm Model="@employee" OnValidSubmit="@Save">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@if (allowed)
+{
 
-    <div class="row">
-        <div class="col-1">
-             <label for="name" class="form-label">Name</label>
+    <EditForm Model="@employee" OnValidSubmit="@Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="row">
+            <div class="col-1">
+                <label for="name" class="form-label">Name</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=employee.Name name="name" class="form-control" />
+            </div>
+            <div class="col-1">
+                <label for="username" class="form-label">Username</label>
+            </div>
+            <div class="col-2">
+                <InputText @bind-Value=employee.Username name="username" class="form-control"></InputText>
+            </div>
         </div>
-        <div class="col-3">
-            <InputText @bind-Value=employee.Name name="name" class="form-control" />
+        <div class="row">
+            <div class="col-1">
+                <label class="form-label">SurName</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=employee.Surname class="form-control"  />
+            </div>
+            <div class="col-1">
+                <label for="password" class="form-label">Password</label>
+            </div>
+            <div class="col-2">
+                <InputText type="password" @bind-Value=employee.Password name="password" class="form-control"></InputText>
+            </div>
         </div>
-        <div class="col-1">
-            <label for="username" class="form-label">Username</label>
-        </div>
-        <div class="col-2">
-            <InputText @bind-Value=employee.Username name="username" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label class="form-label">SurName</label>
-        </div>
-        <div class="col-3">
-            <InputText @bind-Value=employee.Surname class="form-control"  />
-        </div>
-        <div class="col-1">
-            <label for="password" class="form-label">Password</label>
-        </div>
-        <div class="col-2">
-            <InputText @bind-Value=employee.Password name="password" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label for="type" class="form-label">Type</label>
-        </div>
-        <div class="col-3">
-            <InputSelect @bind-Value=employee.EmployeeType class="form-control" name="type">
-                @foreach(var type in Enum.GetValues(typeof(EmployeeType)))
-                {
-                     <option value="@type">@type</option>
-                }
+        <div class="row">
+            <div class="col-1">
+                <label for="type" class="form-label">Type</label>
+            </div>
+            <div class="col-3">
+                <InputSelect @bind-Value=employee.EmployeeType class="form-control" name="type">
+                    @foreach (var type in Enum.GetValues(typeof(EmployeeType)))
+                    {
+                    <option value="@type">@type</option>
+                    }
             </InputSelect>
         </div>
     </div>
@@ -78,17 +81,28 @@
         </div>
     </div>
 </EditForm>
+}
+else
+{
+    <h1>You are not authorized to see this context!!</h1>
+}
+
 
 @code {
     [Parameter] public Guid? id { get; set; }
+    private bool allowed { get; set; } = false;
     private EmployeeViewModel employee { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+
+        allowed = await httpClient.GetFromJsonAsync<bool>("/employee/authorization");
+        if (!allowed) return;
         if(id is not null && Guid.Empty != id)
         {
-            await tools.LoadAuthToken(httpClient, localStorage);
+            
             employee = await httpClient.GetFromJsonAsync<EmployeeViewModel>($"/employee/active/{id}");
         }
         else

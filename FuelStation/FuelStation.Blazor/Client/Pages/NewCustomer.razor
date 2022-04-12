@@ -7,53 +7,66 @@
 
 <h3 class="mb-5">New Customer</h3>
 
-<EditForm Model="@customer" OnValidSubmit="@Save">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@if (allowed)
+{
+    <EditForm Model="@customer" OnValidSubmit="@Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="row">
-        <div class="col-1">
-             <label for="name" class="form-label">Name</label>
+        <div class="row">
+            <div class="col-1">
+                <label for="name" class="form-label">Name</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=customer.Name name="name" class="form-control" />
+            </div>
         </div>
-        <div class="col-3">
-            <InputText @bind-Value=customer.Name name="name" class="form-control"  />
+        <div class="row">
+            <div class="col-1">
+                <label class="form-label">SurName</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=customer.Surname class="form-control" />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label class="form-label">SurName</label>
+        <div class="row">
+            <div class="col-1">
+                <label for="cardNumber" class="form-label">CardNumber</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" readonly />
+            </div>
         </div>
-        <div class="col-3">
-            <InputText @bind-Value=customer.Surname class="form-control" />
+        <div class="row">
+            <div class="col-1">
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+            </div>
+            <div class="col-1">
+                <button class="btn btn-danger mt-3" @onclick="GoBack">Cancel</button>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label for="cardNumber" class="form-label">CardNumber</label>
-        </div>
-        <div class="col-3">
-            <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" readonly/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <button type="submit" class="btn btn-primary mt-3">Save</button>
-        </div>
-        <div class="col-1">
-            <button class="btn btn-danger mt-3" @onclick="GoBack">Cancel</button>
-        </div>
-    </div>
-</EditForm>
+    </EditForm>
+   }
+   else
+    {
+        <h1>You are not authorized to see this context!!</h1>
+    }
+
 
 @code {
     [Parameter] public Guid? id { get; set; }
     private CustomerViewModel customer { get; set; } = new();
+    private bool allowed { get; set; } = false;
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         await tools.LoadAuthToken(httpClient, localStorage);
-        if(id is not null && Guid.Empty != id)
+        
+        allowed = await httpClient.GetFromJsonAsync<bool>("customer/authorization");
+        if (!allowed) return;
+
+        if (id is not null && Guid.Empty != id)
         {
 
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
@@ -77,7 +90,7 @@
         {
             response = await httpClient.PutAsJsonAsync<CustomerViewModel>("/customer", customer);
         }
-        
+
         if (!response.IsSuccessStatusCode)
         {
             await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong!");

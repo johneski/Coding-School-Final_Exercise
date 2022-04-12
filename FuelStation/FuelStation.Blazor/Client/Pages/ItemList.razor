@@ -19,6 +19,8 @@
 }
 else
 {
+    @if (allowed)
+    {
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -67,22 +69,34 @@ else
     }
     else
     {
-       <td><button class="btn btn-secondary" @onclick="()=>ShowActiveItems()">Back</button></td> 
-    }
+            <td><button class="btn btn-secondary" @onclick="()=>ShowActiveItems()">Back</button></td>
+        }
 
+    }
+    else
+    {
+        <h1>You are not authorized to see this context!!</h1>
+    }
 }
 
 
 @code {
     private bool _isLoading { get; set; } = true;
     private bool deletedList { get; set; } = false;
+    private bool allowed { get; set; } = false;
     private List<ItemViewModel>? items { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         await tools.LoadAuthToken(httpClient, localStorage);
-        items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/active");
+
+        allowed = await httpClient.GetFromJsonAsync<bool>("/item/authorization");
+        if (allowed)
+        {
+            items = await httpClient.GetFromJsonAsync<List<ItemViewModel>>("/item/active");   
+        }
+        
         _isLoading = false;
     }
 

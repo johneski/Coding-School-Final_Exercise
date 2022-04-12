@@ -8,36 +8,39 @@
 
 <h3 class="mb-5">New Item</h3>
 
-<EditForm Model="@item" OnValidSubmit="@Save">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
-    <div class="row">
-        <div class="col-1">
-             <label for="code" class="form-label">Code</label>
+@if (allowed)
+{
+    <EditForm Model="@item" OnValidSubmit="@Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="row">
+            <div class="col-1">
+                <label for="code" class="form-label">Code</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=item.Code name="code" class="form-control"  />
+            </div>
         </div>
-        <div class="col-3">
-            <InputText @bind-Value=item.Code name="code" class="form-control"  />
+        <div class="row">
+            <div class="col-1">
+                <label for="description" class="form-label">Description</label>
+            </div>
+            <div class="col-3">
+                <InputText @bind-Value=item.Description class="form-control" name="description"  />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label for="description" class="form-label">Description</label>
-        </div>
-        <div class="col-3">
-            <InputText @bind-Value=item.Description class="form-control" name="description"  />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label for="type" class="form-label">Type</label>
-        </div>
-        <div class="col-3">
-            <InputSelect @bind-Value=item.ItemType class="form-control" name="type">
-                @foreach(var type in Enum.GetValues(typeof(ItemType)))
-                {
+        <div class="row">
+            <div class="col-1">
+                <label for="type" class="form-label">Type</label>
+            </div>
+            <div class="col-3">
+                <InputSelect @bind-Value=item.ItemType class="form-control" name="type">
+                    @foreach (var type in Enum.GetValues(typeof(ItemType)))
+                    {
                     <option value="@type">@type</option>
-                }
+                    }
             </InputSelect>
         </div>
     </div>
@@ -66,17 +69,28 @@
         </div>
     </div>
 </EditForm>
+}
+else
+{
+    <h1>You are not authorized to see this context!!</h1>
+}
+
 
 @code {
     [Parameter] public Guid? id { get; set; }
+    private bool allowed { get; set; } = false;
     private ItemViewModel item { get; set; } = new();
     private Tools tools { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
+
+        allowed = await httpClient.GetFromJsonAsync<bool>("/item/authorization");
+        if (!allowed) return;
+
         if(id is not null && Guid.Empty != id)
         {
-            await tools.LoadAuthToken(httpClient, localStorage);
             item = await httpClient.GetFromJsonAsync<ItemViewModel>($"/item/active/{id}");
         }
     }
@@ -84,7 +98,17 @@
     private async void Save()
     {
         await tools.LoadAuthToken(httpClient, localStorage);
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync<ItemViewModel>("/item", item);
+
+        HttpResponseMessage response;
+        if(id is null || id == Guid.Empty)
+        {
+            response = await httpClient.PostAsJsonAsync<ItemViewModel>("/item", item);
+        }
+        else
+        {
+            response = await httpClient.PutAsJsonAsync<ItemViewModel>("/item", item);
+        }
+
         response.EnsureSuccessStatusCode();
         navManager.NavigateTo("/items");
     }
