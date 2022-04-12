@@ -9,12 +9,15 @@
 <h3 class="mb-5">New Employee</h3>
 
 <EditForm Model="@employee" OnValidSubmit="@Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div class="row">
         <div class="col-1">
              <label for="name" class="form-label">Name</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=employee.Name name="name" class="form-control" pattern="[A-Za-z]{3,15}"  />
+            <InputText @bind-Value=employee.Name name="name" class="form-control" />
         </div>
     </div>
     <div class="row">
@@ -22,7 +25,7 @@
             <label class="form-label">SurName</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=employee.Surname class="form-control" pattern="[A-Za-z]{3,20}"  />
+            <InputText @bind-Value=employee.Surname class="form-control"  />
         </div>
     </div>
     <div class="row">
@@ -51,7 +54,7 @@
             <label for="salary" class="form-label">Salary / Month</label>
         </div>
         <div class="col-3">
-            <InputNumber @bind-Value=employee.SalaryPerMonth class="form-control" name="salary" pattern="[0-9]{9}" />
+            <InputNumber @bind-Value=employee.SalaryPerMonth class="form-control" name="salary" />
         </div>
     </div>
     <div class="row">

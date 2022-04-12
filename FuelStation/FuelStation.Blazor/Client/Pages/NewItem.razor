@@ -9,12 +9,15 @@
 <h3 class="mb-5">New Item</h3>
 
 <EditForm Model="@item" OnValidSubmit="@Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div class="row">
         <div class="col-1">
              <label for="code" class="form-label">Code</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=item.Code name="code" class="form-control" pattern="[A-Za-z0-9]{1,15}" title="It must be at most 3 and 15 characters long." />
+            <InputText @bind-Value=item.Code name="code" class="form-control"  />
         </div>
     </div>
     <div class="row">
@@ -22,7 +25,7 @@
             <label for="description" class="form-label">Description</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=item.Description class="form-control" name="description" pattern="[A-Za-z]{1,20}" title="It must be at most 20 characters long." />
+            <InputText @bind-Value=item.Description class="form-control" name="description"  />
         </div>
     </div>
     <div class="row">
@@ -43,7 +46,7 @@
             <label for="cost" class="form-label">Cost</label>
         </div>
         <div class="col-3">
-            <InputNumber @bind-Value=item.Cost class="form-control" name="cost" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+            <InputNumber @bind-Value=item.Cost class="form-control" name="cost" />
         </div>
     </div>
     <div class="row">
@@ -51,7 +54,7 @@
             <label for="price" class="form-label">Price</label>
         </div>
         <div class="col-3">
-            <InputNumber @bind-Value=item.Price class="form-control" name="price" pattern="[0-9]{9}" title="It must be 9 digits long. Only digits."/>
+            <InputNumber @bind-Value=item.Price class="form-control" name="price" />
         </div>
     </div>
     <div class="row">

@@ -32,7 +32,7 @@
             <label for="cardNumber" class="form-label">CardNumber</label>
         </div>
         <div class="col-3">
-            <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" />
+            <InputText @bind-Value=customer.CardNumber class="form-control" name="cardNumber" readonly/>
         </div>
     </div>
     <div class="row">
@@ -55,7 +55,10 @@
         {
             var authToken = await localStorage.GetItemAsStringAsync("authToken");
             customer = await httpClient.GetFromJsonAsync<CustomerViewModel>($"/customer/active/{id}");
-            //populate();
+        }
+        else
+        {
+            customer = await httpClient.GetFromJsonAsync<CustomerViewModel>("/customer/newcustomer");
         }
     }
 

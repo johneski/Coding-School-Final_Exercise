@@ -4,6 +4,7 @@ using FuelStation.EF.Models;
 using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using FuelStation.Blazor.Shared.ViewModels;
+using FuelStation.Blazor.Shared.Tools;
 
 namespace FuelStation.Blazor.Server.Controllers
 {    
@@ -169,6 +170,24 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return false;
+        }
+
+        [HttpGet("newcustomer")]
+        public async Task<CustomerViewModel> NewCustomer()
+        {
+            Tools tools = new();
+            CustomerViewModel customer = new();
+            string cardNumber;
+            var customers = await _customerRepo.GetAllAsync();
+            var cardNumbersList = customers.Select(x => x.CardNumber).ToList();
+            while (true)
+            {
+                cardNumber = tools.GenerateCardNumber();
+                if (!cardNumbersList.Contains(cardNumber))
+                    break;
+            }
+            customer.CardNumber = cardNumber;
+            return customer;
         }
     }
 }
