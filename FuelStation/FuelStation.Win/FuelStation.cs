@@ -20,5 +20,11 @@ namespace FuelStation.Win
             CustomersForm form = new CustomersForm(Program.serviceProvider.GetRequiredService<HttpClient>());
             form.ShowDialog();
         }
+
+        private void itemsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ItemsForm form = new();
+            form.ShowDialog();
+        }
     }
 }
