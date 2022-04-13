@@ -32,7 +32,7 @@
             this.spinPrice = new DevExpress.XtraEditors.SpinEdit();
             this.spinCost = new DevExpress.XtraEditors.SpinEdit();
             this.cmbType = new System.Windows.Forms.ComboBox();
-            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.lblItemsGrid = new DevExpress.XtraEditors.LabelControl();
             this.btnDeletedList = new DevExpress.XtraEditors.SimpleButton();
             this.btnActiveList = new DevExpress.XtraEditors.SimpleButton();
             this.grdItems = new DevExpress.XtraGrid.GridControl();
@@ -90,7 +90,7 @@
             this.layoutControl1.Controls.Add(this.spinPrice);
             this.layoutControl1.Controls.Add(this.spinCost);
             this.layoutControl1.Controls.Add(this.cmbType);
-            this.layoutControl1.Controls.Add(this.labelControl1);
+            this.layoutControl1.Controls.Add(this.lblItemsGrid);
             this.layoutControl1.Controls.Add(this.btnDeletedList);
             this.layoutControl1.Controls.Add(this.btnActiveList);
             this.layoutControl1.Controls.Add(this.grdItems);
@@ -166,14 +166,14 @@
             this.cmbType.Size = new System.Drawing.Size(252, 23);
             this.cmbType.TabIndex = 5;
             // 
-            // labelControl1
+            // lblItemsGrid
             // 
-            this.labelControl1.Location = new System.Drawing.Point(12, 162);
-            this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(60, 13);
-            this.labelControl1.StyleController = this.layoutControl1;
-            this.labelControl1.TabIndex = 1;
-            this.labelControl1.Text = "Active Items";
+            this.lblItemsGrid.Location = new System.Drawing.Point(12, 162);
+            this.lblItemsGrid.Name = "lblItemsGrid";
+            this.lblItemsGrid.Size = new System.Drawing.Size(60, 13);
+            this.lblItemsGrid.StyleController = this.layoutControl1;
+            this.lblItemsGrid.TabIndex = 1;
+            this.lblItemsGrid.Text = "Active Items";
             // 
             // btnDeletedList
             // 
@@ -183,6 +183,7 @@
             this.btnDeletedList.StyleController = this.layoutControl1;
             this.btnDeletedList.TabIndex = 12;
             this.btnDeletedList.Text = "Show Deleted";
+            this.btnDeletedList.Click += new System.EventHandler(this.btnDeletedList_Click);
             // 
             // btnActiveList
             // 
@@ -192,6 +193,7 @@
             this.btnActiveList.StyleController = this.layoutControl1;
             this.btnActiveList.TabIndex = 11;
             this.btnActiveList.Text = "Show Active";
+            this.btnActiveList.Click += new System.EventHandler(this.btnActiveList_Click);
             // 
             // grdItems
             // 
@@ -219,6 +221,7 @@
             this.btnUndo.StyleController = this.layoutControl1;
             this.btnUndo.TabIndex = 8;
             this.btnUndo.Text = "Undo";
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
             // btnSave
             // 
@@ -228,6 +231,7 @@
             this.btnSave.StyleController = this.layoutControl1;
             this.btnSave.TabIndex = 6;
             this.btnSave.Text = "Save";
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnDelete
             // 
@@ -237,6 +241,7 @@
             this.btnDelete.StyleController = this.layoutControl1;
             this.btnDelete.TabIndex = 4;
             this.btnDelete.Text = "Delete";
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnNew
             // 
@@ -379,7 +384,7 @@
             // 
             // layoutControlItem4
             // 
-            this.layoutControlItem4.Control = this.labelControl1;
+            this.layoutControlItem4.Control = this.lblItemsGrid;
             this.layoutControlItem4.Location = new System.Drawing.Point(0, 150);
             this.layoutControlItem4.Name = "layoutControlItem4";
             this.layoutControlItem4.Size = new System.Drawing.Size(780, 17);
@@ -478,7 +483,7 @@
         private DevExpress.XtraGrid.GridControl grdItems;
         private DevExpress.XtraGrid.Views.Grid.GridView grdViewItems;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem1;
-        private DevExpress.XtraEditors.LabelControl labelControl1;
+        private DevExpress.XtraEditors.LabelControl lblItemsGrid;
         private DevExpress.XtraEditors.SimpleButton btnDeletedList;
         private DevExpress.XtraEditors.SimpleButton btnActiveList;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem2;

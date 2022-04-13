@@ -86,7 +86,7 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromHeader]Guid authorization, [FromBody] ItemViewModel itemView)
+        public async Task<IActionResult> Post([FromHeader]Guid authorization,[FromBody] ItemViewModel itemView)
         {
             if(_dataValidation.Validate(itemView) && await _userValidation.ValidateTokenAsync(authorization))
             {
@@ -127,6 +127,36 @@ namespace FuelStation.Blazor.Server.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromHeader] Guid authorization, [FromBody] ItemViewModel itemView)
+        {
+
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                try
+                {
+                    var item = await _itemRepo.GetByIdAsync(itemView.Id, true);
+                    if (item is not null && _dataValidation.Validate(itemView))
+                    {
+                        item.Code = itemView.Code;
+                        item.Description = itemView.Description;
+                        item.ItemType = itemView.ItemType;
+                        item.Cost = itemView.Cost;
+                        item.Price = itemView.Price;
+                        await _itemRepo.UpdateAsync(item.Id, item);
+                        return Ok();
+                    }
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return NotFound();
+                }
+            }
+
+            return BadRequest();
+
         }
 
         [HttpPut("undo/{id}")]

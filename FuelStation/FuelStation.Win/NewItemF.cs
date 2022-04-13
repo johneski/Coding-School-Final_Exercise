@@ -35,7 +35,7 @@ namespace FuelStation.Win
             txtCode.DataBindings.Add(new Binding("EditValue", _item, "Code", true));
             txtDescription.DataBindings.Add(new Binding("EditValue", _item, "Description", true));
             cmbType.DataSource = Enum.GetValues(typeof(ItemType));
-            cmbType.DataBindings.Add(new Binding("DisplayMember", _item, "ItemType", true));
+            cmbType.DataBindings.Add(new Binding("SelectedValue", _item, "ItemType", true));
             spinCost.DataBindings.Add(new Binding("EditValue", _item, "Cost", true));
             spinPrice.DataBindings.Add(new Binding("EditValue", _item, "Price", true));
         }
@@ -47,7 +47,7 @@ namespace FuelStation.Win
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            var response = await _client.PostAsJsonAsync(Program.baseURL + "/item/newitem", _item);
+            var response = await _client.PostAsJsonAsync(Program.baseURL + "/item", _item);
             if (!response.IsSuccessStatusCode)
             {
                 lblMessage.Text = "Wrong Inputs!";
@@ -57,7 +57,6 @@ namespace FuelStation.Win
             if (!string.IsNullOrEmpty(lblMessage.Text))
                 lblMessage.Text = "";
             this.Close();
-        
         }
     }
 }

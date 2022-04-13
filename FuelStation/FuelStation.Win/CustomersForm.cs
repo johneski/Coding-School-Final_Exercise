@@ -173,6 +173,7 @@ namespace FuelStation.Win
 
         private async void btnUndo_Click(object sender, EventArgs e)
         {
+            if (_customers.Count == 0) return;
             var customer = grdViewCustomers.GetFocusedRow() as CustomerViewModel;
             if (customer is null) return;
             await _client.PutAsJsonAsync(Program.baseURL + $"/customer/undo/{customer.Id}", "");

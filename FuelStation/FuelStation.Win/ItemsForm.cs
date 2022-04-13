@@ -31,7 +31,7 @@ namespace FuelStation.Win
         {
             this.layoutControl1.Controls.Remove(this.btnUndo);
 
-            _items = await GetActiveItems();
+            _items = await GetActiveItemsAsync();
             SetBindings();
             SetView();
         }
@@ -56,20 +56,24 @@ namespace FuelStation.Win
             //cmbType.DataBindings.Add(new Binding("DisplayMember", _currentItem, "ItemType", true, DataSourceUpdateMode.OnPropertyChanged));
         }
 
-        public async Task<List<ItemViewModel>> GetActiveItems()
+        public async Task<List<ItemViewModel>> GetActiveItemsAsync()
         {
-            return _items = await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/active");
+            return await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/active");
         }
 
-        public async Task<List<ItemViewModel>> GetInactiveItems()
+        public async Task<List<ItemViewModel>> GetInactiveItemsAsync()
         {
-            return _items = await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/inactive");
+            return await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/inactive");
         }
 
-        private void btnNew_Click(object sender, EventArgs e)
+        private async void btnNew_Click(object sender, EventArgs e)
         {
             NewItemF form = new();
             form.ShowDialog();
+            _items = await GetActiveItemsAsync();
+            bsItems.DataSource = _items;
+            grdItems.RefreshDataSource();
+            grdViewItems.RefreshData();
         }
 
         private void grdViewItems_FocusedRowChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs e)
@@ -77,9 +81,121 @@ namespace FuelStation.Win
             if(cmbType.SelectedIndex != -1)
             {
                 _currentItem = grdViewItems.GetFocusedRow() as ItemViewModel;
+                if (_currentItem is null) return;
                 cmbType.SelectedIndex = (int)_currentItem.ItemType;
             }
             
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            List<string> invalidItems = new();
+            foreach (var item in _items)
+            {
+                var response = await _client.PutAsJsonAsync(Program.baseURL + "/item", item);
+                if (!response.IsSuccessStatusCode)
+                {
+                    invalidItems.Add($"{item.Code} : {item.Description}");
+                }
+            }
+
+            if (invalidItems.Count() > 0)
+            {
+                MessageBox.Show("These items could not be saved because of invalid input: \n" + string.Join("\n", invalidItems));
+                bsItems.DataSource = await GetActiveItemsAsync();
+                grdItems.RefreshDataSource();
+            }
+
+            MessageBox.Show("Save Completed!");
+        }
+
+        private async void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (_items is null || _items.Count() == 0) return;
+            var currentItem = grdViewItems.GetFocusedRow() as ItemViewModel;
+            var response = await _client.DeleteAsync(Program.baseURL + $"/item/{currentItem.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+
+                _items = await GetActiveItemsAsync();
+                bsItems.DataSource = _items;
+                grdItems.RefreshDataSource();
+                grdViewItems.RefreshData();
+                MessageBox.Show("Complete!");
+                return;
+            }
+
+            MessageBox.Show("Something went wrong!");
+        }
+
+        private async void btnDeletedList_Click(object sender, EventArgs e)
+        {
+            CreateUndoButton();
+            TextReadonly(true);
+            ButtonsEnabled(false);
+
+            bsItems.DataSource = await GetInactiveItemsAsync();
+            grdItems.RefreshDataSource();
+            grdViewItems.RefreshData();
+            lblItemsGrid.Text = "Deleted Customers";
+        }
+        private async void btnActiveList_Click(object sender, EventArgs e)
+        {
+            DestroyUndoButton();
+            TextReadonly(false);
+            ButtonsEnabled(true);
+
+            bsItems.DataSource = await GetActiveItemsAsync();
+            grdItems.RefreshDataSource();
+            grdViewItems.RefreshData();
+            lblItemsGrid.Text = "Active Customers";
+        }
+
+        private void DestroyUndoButton()
+        {
+            this.layoutControl1.Controls.Remove(this.btnUndo);
+        }
+
+        private void CreateUndoButton()
+        {
+            this.layoutControl1.Controls.Add(this.btnUndo);
+        }
+
+        private void ButtonsEnabled(bool isenabled)
+        {
+            btnNew.Enabled = isenabled;
+            btnDelete.Enabled = isenabled;
+            btnSave.Enabled = isenabled;
+        }
+
+        private void TextReadonly(bool isreadonly)
+        {
+            txtCode.ReadOnly = isreadonly;
+            txtDescription.ReadOnly = isreadonly;
+            cmbType.Enabled = !isreadonly;
+            spinCost.ReadOnly = isreadonly;
+            spinPrice.ReadOnly = isreadonly;
+        }
+
+
+        private async void btnUndo_Click(object sender, EventArgs e)
+        {
+            if (_items.Count == 0) return;
+            var item = grdViewItems.GetFocusedRow() as ItemViewModel;
+
+            if (item == null) return;
+            var response = await _client.PutAsJsonAsync(Program.baseURL + $"/item/undo/{item.Id}", "");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Something went wrong!");
+                return;
+            }
+
+            bsItems.Remove(item);
+            grdItems.RefreshDataSource();
+            grdViewItems.RefreshData();
+
         }
     }
 }
