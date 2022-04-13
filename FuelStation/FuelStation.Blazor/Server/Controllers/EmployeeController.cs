@@ -64,11 +64,19 @@ namespace FuelStation.Blazor.Server.Controllers
                     Password = employee.Password,
                 };
                 newEmployee.Credentials = credentials;
-                await _employeeRepo.CreateAsync(newEmployee);
+                try
+                {
+                    await _employeeRepo.CreateAsync(newEmployee);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest("There was a conflict");
+                }
+                
                 return Ok();
             }
 
-            return BadRequest();
+            return BadRequest("Wrong data inputs");
         }
 
         [HttpGet("active/{id}")]

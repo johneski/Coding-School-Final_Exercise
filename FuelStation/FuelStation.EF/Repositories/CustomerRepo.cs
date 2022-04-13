@@ -20,14 +20,7 @@ namespace FuelStation.EF.Repositories
         public async Task CreateAsync(Customer entity)
         {
             await _fuelStationContext.Customers.AddAsync(entity);
-            try
-            {
-                await _fuelStationContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            await _fuelStationContext.SaveChangesAsync();
             
         }
 

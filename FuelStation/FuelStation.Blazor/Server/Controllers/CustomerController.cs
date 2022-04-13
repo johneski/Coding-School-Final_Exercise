@@ -5,6 +5,7 @@ using FuelStation.EF.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using FuelStation.Blazor.Shared.ViewModels;
 using FuelStation.Blazor.Shared.Tools;
+using System.Net.Http;
 
 namespace FuelStation.Blazor.Server.Controllers
 {    
@@ -59,9 +60,11 @@ namespace FuelStation.Blazor.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromHeader] Guid authorization, CustomerViewModel customer)
+        public async Task<HttpResponseMessage> CreateCustomer([FromHeader] Guid authorization, CustomerViewModel customer)
         {
-            if(await _userValidation.ValidateTokenAsync(authorization) && _dataValidation.Validate(customer))
+            HttpResponseMessage response = new();
+
+            if (await _userValidation.ValidateTokenAsync(authorization) && _dataValidation.Validate(customer))
             {
                 var newCustomer = new Customer()
                 {
@@ -69,12 +72,23 @@ namespace FuelStation.Blazor.Server.Controllers
                     Surname = customer.Surname,
                     CardNumber = customer.CardNumber,
                 };
-
-                await _customerRepo.CreateAsync(newCustomer);
-                return Ok();
+                try
+                {
+                    await _customerRepo.CreateAsync(newCustomer);
+                }catch (Exception ex)
+                {
+                    
+                    response.Content = new StringContent("There was a conflict");
+                    response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    return response;
+                }
+                response.StatusCode = System.Net.HttpStatusCode.OK;
+                return response;
             }
 
-            return BadRequest();
+            response.Content = new StringContent("Wrong data inputs");
+            response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            return response;
         }
 
         [HttpGet("active/{id}")]

@@ -97,10 +97,18 @@ namespace FuelStation.Blazor.Server.Controllers
                 item.ItemType = itemView.ItemType;
                 item.Price = itemView.Price;
 
-                await _itemRepo.CreateAsync(item);
+                try
+                {
+                    await _itemRepo.CreateAsync(item);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest("There was a conflict");
+                }
+                
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest("Wrong data inputs");
         }
 
         [HttpDelete("{id}")]
