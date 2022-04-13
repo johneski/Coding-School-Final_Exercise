@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
+            this.btnUndo = new DevExpress.XtraEditors.SimpleButton();
             this.lblCustomers = new DevExpress.XtraEditors.LabelControl();
             this.btnActiveList = new DevExpress.XtraEditors.SimpleButton();
             this.btnDeletedList = new DevExpress.XtraEditors.SimpleButton();
@@ -52,6 +53,7 @@
             this.layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdCustomers)).BeginInit();
@@ -71,10 +73,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
             // 
+            this.layoutControl1.Controls.Add(this.btnUndo);
             this.layoutControl1.Controls.Add(this.lblCustomers);
             this.layoutControl1.Controls.Add(this.btnActiveList);
             this.layoutControl1.Controls.Add(this.btnDeletedList);
@@ -93,9 +97,19 @@
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
             // 
+            // btnUndo
+            // 
+            this.btnUndo.Location = new System.Drawing.Point(655, 90);
+            this.btnUndo.Name = "btnUndo";
+            this.btnUndo.Size = new System.Drawing.Size(133, 22);
+            this.btnUndo.StyleController = this.layoutControl1;
+            this.btnUndo.TabIndex = 11;
+            this.btnUndo.Text = "Undo";
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
+            // 
             // lblCustomers
             // 
-            this.lblCustomers.Location = new System.Drawing.Point(12, 90);
+            this.lblCustomers.Location = new System.Drawing.Point(12, 116);
             this.lblCustomers.Name = "lblCustomers";
             this.lblCustomers.Size = new System.Drawing.Size(84, 13);
             this.lblCustomers.StyleController = this.layoutControl1;
@@ -110,6 +124,7 @@
             this.btnActiveList.StyleController = this.layoutControl1;
             this.btnActiveList.TabIndex = 8;
             this.btnActiveList.Text = "Show Active";
+            this.btnActiveList.Click += new System.EventHandler(this.btnActiveList_Click);
             // 
             // btnDeletedList
             // 
@@ -119,6 +134,7 @@
             this.btnDeletedList.StyleController = this.layoutControl1;
             this.btnDeletedList.TabIndex = 9;
             this.btnDeletedList.Text = "Show Deleted";
+            this.btnDeletedList.Click += new System.EventHandler(this.btnDeletedList_Click);
             // 
             // btnSave
             // 
@@ -152,10 +168,10 @@
             // 
             // grdCustomers
             // 
-            this.grdCustomers.Location = new System.Drawing.Point(12, 107);
+            this.grdCustomers.Location = new System.Drawing.Point(12, 133);
             this.grdCustomers.MainView = this.grdViewCustomers;
             this.grdCustomers.Name = "grdCustomers";
-            this.grdCustomers.Size = new System.Drawing.Size(776, 305);
+            this.grdCustomers.Size = new System.Drawing.Size(776, 279);
             this.grdCustomers.TabIndex = 7;
             this.grdCustomers.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grdViewCustomers});
@@ -171,6 +187,7 @@
             // 
             this.txtCardNumber.Location = new System.Drawing.Point(87, 60);
             this.txtCardNumber.Name = "txtCardNumber";
+            this.txtCardNumber.Properties.ReadOnly = true;
             this.txtCardNumber.Size = new System.Drawing.Size(176, 20);
             this.txtCardNumber.StyleController = this.layoutControl1;
             this.txtCardNumber.TabIndex = 5;
@@ -206,7 +223,8 @@
             this.layoutControlItem7,
             this.layoutControlItem8,
             this.layoutControlItem9,
-            this.layoutControlItem10});
+            this.layoutControlItem10,
+            this.layoutControlItem11});
             this.Root.Name = "Root";
             this.Root.Size = new System.Drawing.Size(800, 450);
             this.Root.TextVisible = false;
@@ -234,16 +252,16 @@
             this.layoutControlItem3.Control = this.txtCardNumber;
             this.layoutControlItem3.Location = new System.Drawing.Point(0, 48);
             this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(255, 30);
+            this.layoutControlItem3.Size = new System.Drawing.Size(255, 56);
             this.layoutControlItem3.Text = "Card Number";
             this.layoutControlItem3.TextSize = new System.Drawing.Size(63, 13);
             // 
             // layoutControlItem4
             // 
             this.layoutControlItem4.Control = this.grdCustomers;
-            this.layoutControlItem4.Location = new System.Drawing.Point(0, 95);
+            this.layoutControlItem4.Location = new System.Drawing.Point(0, 121);
             this.layoutControlItem4.Name = "layoutControlItem4";
-            this.layoutControlItem4.Size = new System.Drawing.Size(780, 309);
+            this.layoutControlItem4.Size = new System.Drawing.Size(780, 283);
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem4.TextVisible = false;
             // 
@@ -261,7 +279,7 @@
             this.emptySpaceItem1.AllowHotTrack = false;
             this.emptySpaceItem1.Location = new System.Drawing.Point(255, 0);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(388, 78);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(388, 104);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem6
@@ -303,11 +321,20 @@
             // layoutControlItem10
             // 
             this.layoutControlItem10.Control = this.lblCustomers;
-            this.layoutControlItem10.Location = new System.Drawing.Point(0, 78);
+            this.layoutControlItem10.Location = new System.Drawing.Point(0, 104);
             this.layoutControlItem10.Name = "layoutControlItem10";
             this.layoutControlItem10.Size = new System.Drawing.Size(780, 17);
             this.layoutControlItem10.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem10.TextVisible = false;
+            // 
+            // layoutControlItem11
+            // 
+            this.layoutControlItem11.Control = this.btnUndo;
+            this.layoutControlItem11.Location = new System.Drawing.Point(643, 78);
+            this.layoutControlItem11.Name = "layoutControlItem11";
+            this.layoutControlItem11.Size = new System.Drawing.Size(137, 26);
+            this.layoutControlItem11.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem11.TextVisible = false;
             // 
             // CustomersForm
             // 
@@ -337,6 +364,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -367,5 +395,7 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem8;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem9;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem10;
+        private DevExpress.XtraEditors.SimpleButton btnUndo;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem11;
     }
 }
