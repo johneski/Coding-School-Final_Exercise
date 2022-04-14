@@ -16,7 +16,7 @@ namespace FuelStation.EF.Configurations
             builder.HasKey(line => line.Id);
             builder.Property(line => line.ItemPrice).HasPrecision(10, 2);
             builder.Property(line => line.NetValue).HasPrecision(10, 2);
-            builder.Property(line => line.DiscountPercent).HasPrecision(5, 4);
+            builder.Property(line => line.DiscountPercent).HasPrecision(10, 4);
             builder.Property(line => line.DiscountValue).HasPrecision(10, 2);
             builder.Property(line => line.TotalValue).HasPrecision(10, 2);
             builder.HasIndex(line => line.IsActive);

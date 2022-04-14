@@ -63,7 +63,7 @@ namespace FuelStation.Win
             txtCustomer.DataBindings.Add(new Binding("EditValue", _bsTransaction, "CustomerName", true));
             cmbPaymentMethod.DataSource = Enum.GetValues(typeof(PaymentMethod));
             cmbPaymentMethod.DataBindings.Add(new Binding("SelectedValue", _bsTransaction, "PaymentMethod", true));
-            txtTotal.DataBindings.Add(new Binding("EditValue", _bsTransaction, "Total", true));
+            txtTotal.DataBindings.Add(new Binding("EditValue", _bsTransaction , "Total", true));
         }
 
         private void SetView()
@@ -89,12 +89,25 @@ namespace FuelStation.Win
                 return;
             }
 
-            _transaction = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/newtransaction/{cardNumber}");
+            var newTransaction = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/newtransaction/{cardNumber}");
+
+            CopyTransaction(_transaction, newTransaction);
 
             if (_transaction.CustomerId == Guid.Empty)
                 MessageBox.Show("Customer not found!");
 
             _bsTransaction.DataSource = _transaction;
+            _bsTransaction.ResetBindings(true);
+        }
+
+        private void CopyTransaction(TransactionViewModel to, TransactionViewModel from )
+        {
+            to.Date = from.Date;
+            to.CustomerName = from.CustomerName;
+            to.CustomerId = from.CustomerId;
+            to.EmployeeId = from.EmployeeId;
+            to.EmployeeName = from.EmployeeName;
+            to.PaymentMethod = from.PaymentMethod;
         }
 
         private void btnAddLine_Click(object sender, EventArgs e)
@@ -116,6 +129,7 @@ namespace FuelStation.Win
 
             TransactionLineViewModel line = new()
             {
+                ItemId = item.Id,
                 ItemName = item.Description,
                 ItemPrice = item.Price,
                 DiscountPercent = 0,
@@ -223,9 +237,9 @@ namespace FuelStation.Win
             CalculateTotal();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
-
+            var response = await _client.PostAsJsonAsync(Program.baseURL + "/transaction", _transaction);
         }
     }
 }

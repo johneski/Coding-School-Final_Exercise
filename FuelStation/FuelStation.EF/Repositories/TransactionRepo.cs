@@ -21,6 +21,7 @@ namespace FuelStation.EF.Repositories
         public async Task CreateAsync(Transaction entity)
         {
             await _fuelStationContext.Transactions.AddAsync(entity);
+            await _fuelStationContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)

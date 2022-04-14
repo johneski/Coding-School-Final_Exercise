@@ -15,47 +15,65 @@ namespace FuelStation.Blazor.Server.Controllers
         private IEntityRepo<Employee> _employeeRepo;
         private IEntityRepo<Customer> _customerRepo;
         private UserValidation _userValidation;
+        private DataValidation _dataValidation;
 
-        public TransactionController(IEntityRepo<Transaction> transactionRepo, UserValidation userValidation, IEntityRepo<Customer> customerRepo, IEntityRepo<Employee> employeeRepo, IEntityRepo<Item> itemRepo)
+        public TransactionController(IEntityRepo<Transaction> transactionRepo, UserValidation userValidation, DataValidation dataValidation, IEntityRepo<Customer> customerRepo, IEntityRepo<Employee> employeeRepo, IEntityRepo<Item> itemRepo)
         {
             _transactionRepo = transactionRepo;
             _userValidation = userValidation;
             _itemRepo = itemRepo;
             _employeeRepo = employeeRepo;
             _customerRepo = customerRepo;
+            _dataValidation = dataValidation;
         }
 
         [HttpGet("active")]
-        public async Task<IEnumerable<TransactionViewModel>> GetAllActive([FromHeader] Guid authorization)
+        public async Task<List<TransactionViewModel>> GetAllActive([FromHeader] Guid authorization)
         {
             if (await _userValidation.ValidateTokenAsync(authorization))
             {
                 var transactions = await _transactionRepo.GetAllActiveAsync();
                 if (transactions is not null)
                 {
-                    return transactions.Select(x => new TransactionViewModel()
+                    var transactionsViewList = new List<TransactionViewModel>();
+                    foreach(var trans in transactions)
                     {
-                        Id = x.Id,
-                        CustomerId = x.CustomerId,
-                        EmployeeId = x.EmployeeId,
-                        Date = x.Date,
-                        EmployeeName = $"{x.Employee.Name} {x.Employee.Surname}",
-                        CustomerName = $"{x.Customer.Name} {x.Customer.Surname}",
-                        PaymentMethod = x.PaymentMethod,
-                        Total = x.Total,
-                        TransactionLines = (List<TransactionLineViewModel>)x.TransactionLines.Select(async line => new TransactionLineViewModel()
+                        var transactionView = new TransactionViewModel()
                         {
-                            Id = line.Id,
-                            ItemName = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).Description,
-                            DiscountPercent = line.DiscountPercent,
-                            DiscountValue = line.DiscountValue,
-                            ItemPrice = line.ItemPrice,
-                            NetValue = line.NetValue,
-                            Qty = line.Qty,
-                            TotalValue = line.TotalValue,
-                            ItemType = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).ItemType,
-                        }),
-                    });
+                            Id = trans.Id,
+                            CustomerId = trans.CustomerId,
+                            EmployeeId = trans.EmployeeId,
+                            Date = trans.Date,
+                            EmployeeName = $"{trans.Employee.Name} {trans.Employee.Surname}",
+                            CustomerName = $"{trans.Customer.Name} {trans.Customer.Surname}",
+                            PaymentMethod = trans.PaymentMethod,
+                            Total = trans.Total,
+                            TransactionLines = new()
+                            
+                        };
+
+                        foreach(var line in trans.TransactionLines)
+                        {
+                            var transactionLineView = new TransactionLineViewModel()
+                            {
+                                Id = line.Id,
+                                ItemName = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).Description,
+                                DiscountPercent = line.DiscountPercent,
+                                DiscountValue = line.DiscountValue,
+                                ItemPrice = line.ItemPrice,
+                                NetValue = line.NetValue,
+                                Qty = line.Qty,
+                                TotalValue = line.TotalValue,
+                                ItemType = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).ItemType,
+                            };
+                            transactionView.TransactionLines.Add(transactionLineView);
+                        }
+
+                        transactionsViewList.Add(transactionView);
+                        
+                    }
+
+                    return transactionsViewList;
                 }
 
             }
@@ -91,6 +109,40 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return new TransactionViewModel();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromHeader] Guid authorization , [FromBody] TransactionViewModel transactionView)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization) && await _dataValidation.Validate(transactionView))
+            {
+                var transaction = new Transaction();
+                transaction.Date = transactionView.Date;
+                transaction.CustomerId = transactionView.CustomerId;
+                transaction.EmployeeId = transactionView.EmployeeId;
+                transaction.PaymentMethod = transactionView.PaymentMethod;
+                transaction.Total = transactionView.Total;
+                transaction.TransactionLines = new();
+                foreach(var line in transactionView.TransactionLines)
+                {
+                    transaction.TransactionLines.Add(new TransactionLine()
+                    {
+                        TransactionId = transaction.Id,
+                        ItemId = line.ItemId,
+                        DiscountPercent = line.DiscountPercent,
+                        ItemPrice = line.ItemPrice,
+                        NetValue = line.NetValue,
+                        TotalValue = line.TotalValue,
+                        Qty = line.Qty,
+                        DiscountValue = line.DiscountValue,
+                    });
+                }
+
+                await _transactionRepo.CreateAsync(transaction);
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }
