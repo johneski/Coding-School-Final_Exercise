@@ -11,6 +11,9 @@ namespace FuelStation.Blazor.Shared.ViewModels
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Guid CustomerId { get; set; }
+
         public string EmployeeName { get; set; }
         public string CustomerName { get; set; }
         public PaymentMethod PaymentMethod { get; set; }

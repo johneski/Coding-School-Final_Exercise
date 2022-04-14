@@ -105,6 +105,38 @@ namespace FuelStation.Blazor.Server.Controllers
             return new EmployeeViewModel();
         }
 
+        [HttpGet("current")]
+        public async Task<EmployeeViewModel> GetCurrentEmployee([FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var employees = await _employeeRepo.GetAllActiveAsync();
+                if(employees is not null)
+                {
+                    var employee = employees.FirstOrDefault(x => x.Credentials.AuthenticationToken == authorization);
+                    if (employee is not null)
+                    {
+                        return new EmployeeViewModel()
+                        {
+                            Id = employee.Id,
+                            Name = employee.Name,
+                            Surname = employee.Surname,
+                            Username = employee.Credentials.UserName,
+                            Password = employee.Credentials.Password,
+                            EmployeeType = employee.EmployeeType,
+                            HireDateEnd = employee.HireDateEnd,
+                            HireDateStart = employee.HireDateStart,
+                            SalaryPerMonth = employee.SalaryPerMonth
+                        };
+                    }
+                }
+                
+            }
+
+            return new EmployeeViewModel();
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] Guid authorization)
         {

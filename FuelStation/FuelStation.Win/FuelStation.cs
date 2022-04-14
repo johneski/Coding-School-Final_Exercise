@@ -26,5 +26,11 @@ namespace FuelStation.Win
             ItemsForm form = new();
             form.ShowDialog();
         }
+
+        private void transactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TransactionsForm form = new();
+            form.ShowDialog();
+        }
     }
 }

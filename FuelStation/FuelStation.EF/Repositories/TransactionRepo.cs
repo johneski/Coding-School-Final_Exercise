@@ -38,7 +38,7 @@ namespace FuelStation.EF.Repositories
 
         public async Task<List<Transaction>> GetAllActiveAsync()
         {
-            return await _fuelStationContext.Transactions.AsNoTracking().Include(x => x.TransactionLines).Where(x => x.IsActive).ToListAsync();
+            return await _fuelStationContext.Transactions.AsNoTracking().Include(x => x.TransactionLines).Include(x => x.Customer).Include(x => x.Employee).Where(x => x.IsActive).ToListAsync();
         }
 
         public async Task<List<Transaction>> GetAllAsync()

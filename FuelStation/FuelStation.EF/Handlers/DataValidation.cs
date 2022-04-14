@@ -16,7 +16,7 @@ namespace FuelStation.EF.Handlers
                 return false;
             if (string.IsNullOrEmpty(customer.Surname) || !Regex.IsMatch(customer.Name, @"^[a-zA-Z''-'\s]{1,20}$"))
                 return false;
-            if (string.IsNullOrEmpty(customer.CardNumber) || !Regex.IsMatch(customer.CardNumber, "^A+[0-9].{10}"))
+            if (string.IsNullOrEmpty(customer.CardNumber) || !Regex.IsMatch(customer.CardNumber, "^A+[0-9]{12}$"))
                 return false;
             return true;
         }
