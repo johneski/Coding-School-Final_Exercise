@@ -18,7 +18,7 @@ namespace FuelStation.Win
 {
     public partial class TransactionEditF : Form
     {
-        private TransactionViewModel _transaction = new();
+        private TransactionViewModel _transaction = new() { TransactionLines = new()};
         private HttpClient _client;
         private EmployeeViewModel _employee;
         private CustomerViewModel _customer;
@@ -53,17 +53,17 @@ namespace FuelStation.Win
 
             _bsTransaction.DataSource = _transaction;
 
-            _bsTransactionLines.DataSource = _transaction.TransactionLines ?? new();
+            _bsTransactionLines.DataSource = _transaction.TransactionLines;
             grdLines.DataSource = _bsTransactionLines;
 
             txtDate.DataBindings.Add(new Binding("EditValue", _bsTransaction, "Date", true));
             _bsEmployee.DataSource = _employee;
             cmbEmployee.DataSource = _bsTransaction;
             cmbEmployee.DisplayMember = "EmployeeName";
-            txtEmployeeId.DataBindings.Add(new Binding("EditValue", _bsTransaction, "EmployeeId", true));
             txtCustomer.DataBindings.Add(new Binding("EditValue", _bsTransaction, "CustomerName", true));
             cmbPaymentMethod.DataSource = Enum.GetValues(typeof(PaymentMethod));
             cmbPaymentMethod.DataBindings.Add(new Binding("SelectedValue", _bsTransaction, "PaymentMethod", true));
+            txtTotal.DataBindings.Add(new Binding("EditValue", _bsTransaction, "Total", true));
         }
 
         private void SetView()
@@ -71,13 +71,11 @@ namespace FuelStation.Win
             grdViewItems.Columns["Id"].Visible = false;
 
             grdViewLines.Columns["Id"].Visible = false;
-            //grdViewLines.Columns.Append(new DevExpress.XtraGrid.Columns.GridColumn()
-            //{
-            //    Caption = "Qty",
-            //    Visible = true,
-            //    UnboundType = DevExpress.Data.UnboundColumnType.Decimal
-            //});
-            
+            grdViewLines.Columns["ItemName"].OptionsColumn.AllowEdit = false;
+            grdViewLines.Columns["ItemPrice"].OptionsColumn.AllowEdit = false;
+            grdViewLines.Columns["NetValue"].OptionsColumn.AllowEdit = false;
+            grdViewLines.Columns["DiscountValue"].OptionsColumn.AllowEdit = false;
+            grdViewLines.Columns["TotalValue"].OptionsColumn.AllowEdit = false;
         }
 
         private async void txtCardNumber_KeyPress(object sender, KeyPressEventArgs e)
@@ -101,6 +99,11 @@ namespace FuelStation.Win
 
         private void btnAddLine_Click(object sender, EventArgs e)
         {
+            AddLine();
+        }
+
+        private void AddLine()
+        {
             if (_items.Count == 0) return;
 
             var item = grdViewItems.GetFocusedRow() as ItemViewModel;
@@ -111,9 +114,6 @@ namespace FuelStation.Win
                 return;
             }
 
-            if (item.ItemType == ItemType.Fuel) 
-                _fuelItemsInList++;
-
             TransactionLineViewModel line = new()
             {
                 ItemName = item.Description,
@@ -123,10 +123,24 @@ namespace FuelStation.Win
                 NetValue = item.Price,
                 Qty = 1,
                 TotalValue = item.Price,
+                ItemType = item.ItemType,
             };
 
 
             _bsTransactionLines.Add(line);
+
+            CheckDiscount(line);
+            
+            line.DiscountValue = (line.DiscountPercent/100) * line.NetValue;
+            line.TotalValue = line.NetValue - line.DiscountValue;
+                
+            if(line.ItemType == ItemType.Fuel)
+                _fuelItemsInList++;
+            
+
+            CalculateTotal();
+
+            
         }
 
         private void grdViewLines_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
@@ -135,9 +149,64 @@ namespace FuelStation.Win
 
             if (line is null) return;
 
+            CheckDiscount(line);
+
             line.NetValue = line.Qty * line.ItemPrice;
             line.DiscountValue = (line.DiscountPercent/100) * line.NetValue;
             line.TotalValue = line.NetValue - line.DiscountValue;
+
+            CalculateTotal();
+        }
+
+
+
+        private void CheckDiscount(TransactionLineViewModel line)
+        {
+            if (line.ItemType == ItemType.Fuel
+                && line.NetValue > 20
+                && line.ItemPrice * line.Qty <= 20)
+            {
+                line.DiscountPercent -= 10m;
+                return;
+            }
+
+            if (line.ItemType == ItemType.Fuel 
+                && line.NetValue <= 20 
+                && line.ItemPrice * line.Qty > 20)
+            {
+                line.DiscountPercent += 10m;
+                return;
+            }
+
+            if (line.ItemType == ItemType.Fuel
+                && line.NetValue > 20
+                && line.ItemPrice * line.Qty == line.NetValue)
+            {
+                line.DiscountPercent += 10m;
+                return;
+            }
+        }
+
+
+        private void CalculateTotal()
+        {
+            _transaction.Total = 0;
+            foreach(var line in _transaction.TransactionLines)
+            {
+                _transaction.Total += line.TotalValue;
+            }
+
+            txtTotal.Text = _transaction.Total.ToString();
+        }
+
+        private void ApplyDiscount(decimal discount)
+        {
+            foreach(TransactionLineViewModel line in _bsTransactionLines)
+            {
+                line.DiscountPercent += discount;
+                line.DiscountValue = line.ItemPrice * line.DiscountPercent;
+                line.TotalValue = line.NetValue - line.DiscountValue;
+            }
         }
     }
 }

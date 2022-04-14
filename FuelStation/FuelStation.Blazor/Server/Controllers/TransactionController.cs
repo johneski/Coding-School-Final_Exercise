@@ -53,6 +53,7 @@ namespace FuelStation.Blazor.Server.Controllers
                             NetValue = line.NetValue,
                             Qty = line.Qty,
                             TotalValue = line.TotalValue,
+                            ItemType = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).ItemType,
                         }),
                     });
                 }

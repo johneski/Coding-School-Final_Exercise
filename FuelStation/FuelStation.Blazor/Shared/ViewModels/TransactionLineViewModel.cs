@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FuelStation.Blazor.Shared.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace FuelStation.Blazor.Shared.ViewModels
         public decimal DiscountPercent { get; set; }
         public decimal DiscountValue { get; set; }
         public decimal TotalValue { get; set; }
+        public ItemType ItemType { get; set; }
     }
 }

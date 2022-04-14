@@ -44,11 +44,9 @@
             this.cmbEmployee = new System.Windows.Forms.ComboBox();
             this.txtCardNumber = new DevExpress.XtraEditors.TextEdit();
             this.txtCustomer = new DevExpress.XtraEditors.TextEdit();
-            this.txtEmployeeId = new DevExpress.XtraEditors.TextEdit();
             this.txtDate = new DevExpress.XtraEditors.TextEdit();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -76,11 +74,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtTotal.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCardNumber.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCustomer.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtEmployeeId.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDate.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
@@ -116,7 +112,6 @@
             this.layoutControl1.Controls.Add(this.cmbEmployee);
             this.layoutControl1.Controls.Add(this.txtCardNumber);
             this.layoutControl1.Controls.Add(this.txtCustomer);
-            this.layoutControl1.Controls.Add(this.txtEmployeeId);
             this.layoutControl1.Controls.Add(this.txtDate);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
@@ -267,16 +262,6 @@
             this.txtCustomer.StyleController = this.layoutControl1;
             this.txtCustomer.TabIndex = 4;
             // 
-            // txtEmployeeId
-            // 
-            this.txtEmployeeId.Location = new System.Drawing.Point(479, 37);
-            this.txtEmployeeId.Name = "txtEmployeeId";
-            this.txtEmployeeId.Properties.ReadOnly = true;
-            this.txtEmployeeId.Properties.UseReadOnlyAppearance = false;
-            this.txtEmployeeId.Size = new System.Drawing.Size(230, 20);
-            this.txtEmployeeId.StyleController = this.layoutControl1;
-            this.txtEmployeeId.TabIndex = 3;
-            // 
             // txtDate
             // 
             this.txtDate.Location = new System.Drawing.Point(105, 12);
@@ -293,7 +278,6 @@
             this.Root.GroupBordersVisible = false;
             this.Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
             this.layoutControlItem1,
-            this.layoutControlItem3,
             this.layoutControlItem4,
             this.layoutControlItem5,
             this.layoutControlItem2,
@@ -324,15 +308,6 @@
             this.layoutControlItem1.Size = new System.Drawing.Size(267, 24);
             this.layoutControlItem1.Text = "Date";
             this.layoutControlItem1.TextSize = new System.Drawing.Size(81, 13);
-            // 
-            // layoutControlItem3
-            // 
-            this.layoutControlItem3.Control = this.txtEmployeeId;
-            this.layoutControlItem3.Location = new System.Drawing.Point(374, 25);
-            this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(327, 24);
-            this.layoutControlItem3.Text = "Employee Id";
-            this.layoutControlItem3.TextSize = new System.Drawing.Size(81, 13);
             // 
             // layoutControlItem4
             // 
@@ -402,7 +377,7 @@
             this.emptySpaceItem2.AllowHotTrack = false;
             this.emptySpaceItem2.Location = new System.Drawing.Point(374, 0);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
-            this.emptySpaceItem2.Size = new System.Drawing.Size(517, 25);
+            this.emptySpaceItem2.Size = new System.Drawing.Size(517, 49);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
             // emptySpaceItem3
@@ -424,9 +399,9 @@
             // emptySpaceItem5
             // 
             this.emptySpaceItem5.AllowHotTrack = false;
-            this.emptySpaceItem5.Location = new System.Drawing.Point(701, 25);
+            this.emptySpaceItem5.Location = new System.Drawing.Point(701, 49);
             this.emptySpaceItem5.Name = "emptySpaceItem5";
-            this.emptySpaceItem5.Size = new System.Drawing.Size(190, 48);
+            this.emptySpaceItem5.Size = new System.Drawing.Size(190, 24);
             this.emptySpaceItem5.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem10
@@ -509,11 +484,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtTotal.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCardNumber.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCustomer.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtEmployeeId.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDate.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
@@ -548,10 +521,8 @@
         private ComboBox cmbEmployee;
         private DevExpress.XtraEditors.TextEdit txtCardNumber;
         private DevExpress.XtraEditors.TextEdit txtCustomer;
-        private DevExpress.XtraEditors.TextEdit txtEmployeeId;
         private DevExpress.XtraEditors.TextEdit txtDate;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem1;
-        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem4;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem5;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem2;
