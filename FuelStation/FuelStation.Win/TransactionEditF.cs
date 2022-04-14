@@ -27,6 +27,7 @@ namespace FuelStation.Win
         private BindingSource _bsEmployee = new ();
         private BindingSource _bsItems = new ();
         private BindingSource _bsTransactionLines = new();
+        private int _fuelItemsInList = 0;
 
         public TransactionEditF()
         {
@@ -46,12 +47,13 @@ namespace FuelStation.Win
 
         private void SetBindings()
         {
+
             _bsItems.DataSource = _items;
             grdItems.DataSource = _bsItems;
 
             _bsTransaction.DataSource = _transaction;
 
-            _bsTransactionLines.DataSource = _transaction.TransactionLines;
+            _bsTransactionLines.DataSource = _transaction.TransactionLines ?? new();
             grdLines.DataSource = _bsTransactionLines;
 
             txtDate.DataBindings.Add(new Binding("EditValue", _bsTransaction, "Date", true));
@@ -67,6 +69,15 @@ namespace FuelStation.Win
         private void SetView()
         {
             grdViewItems.Columns["Id"].Visible = false;
+
+            grdViewLines.Columns["Id"].Visible = false;
+            //grdViewLines.Columns.Append(new DevExpress.XtraGrid.Columns.GridColumn()
+            //{
+            //    Caption = "Qty",
+            //    Visible = true,
+            //    UnboundType = DevExpress.Data.UnboundColumnType.Decimal
+            //});
+            
         }
 
         private async void txtCardNumber_KeyPress(object sender, KeyPressEventArgs e)
@@ -80,7 +91,53 @@ namespace FuelStation.Win
                 return;
             }
 
-            _bsTransaction.DataSource = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/newtransaction/{cardNumber}");
+            _transaction = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/newtransaction/{cardNumber}");
+
+            if (_transaction.CustomerId == Guid.Empty)
+                MessageBox.Show("Customer not found!");
+
+            _bsTransaction.DataSource = _transaction;
+        }
+
+        private void btnAddLine_Click(object sender, EventArgs e)
+        {
+            if (_items.Count == 0) return;
+
+            var item = grdViewItems.GetFocusedRow() as ItemViewModel;
+
+            if (item.ItemType == ItemType.Fuel && _fuelItemsInList > 0)
+            {
+                MessageBox.Show("There has already been added Fuel item in the list!");
+                return;
+            }
+
+            if (item.ItemType == ItemType.Fuel) 
+                _fuelItemsInList++;
+
+            TransactionLineViewModel line = new()
+            {
+                ItemName = item.Description,
+                ItemPrice = item.Price,
+                DiscountPercent = 0,
+                DiscountValue = 0,
+                NetValue = item.Price,
+                Qty = 1,
+                TotalValue = item.Price,
+            };
+
+
+            _bsTransactionLines.Add(line);
+        }
+
+        private void grdViewLines_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
+        {
+            var line = grdViewLines.GetRow(e.RowHandle) as TransactionLineViewModel;
+
+            if (line is null) return;
+
+            line.NetValue = line.Qty * line.ItemPrice;
+            line.DiscountValue = (line.DiscountPercent/100) * line.NetValue;
+            line.TotalValue = line.NetValue - line.DiscountValue;
         }
     }
 }

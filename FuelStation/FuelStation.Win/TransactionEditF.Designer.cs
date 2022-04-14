@@ -149,6 +149,7 @@
             // 
             this.grdViewItems.GridControl = this.grdItems;
             this.grdViewItems.Name = "grdViewItems";
+            this.grdViewItems.OptionsBehavior.Editable = false;
             // 
             // btnCancel
             // 
@@ -176,6 +177,7 @@
             this.btnAddLine.StyleController = this.layoutControl1;
             this.btnAddLine.TabIndex = 9;
             this.btnAddLine.Text = "Add";
+            this.btnAddLine.Click += new System.EventHandler(this.btnAddLine_Click);
             // 
             // btnDelete
             // 
@@ -209,6 +211,7 @@
             // 
             this.grdViewLines.GridControl = this.grdLines;
             this.grdViewLines.Name = "grdViewLines";
+            this.grdViewLines.CellValueChanged += new DevExpress.XtraGrid.Views.Base.CellValueChangedEventHandler(this.grdViewLines_CellValueChanged);
             // 
             // txtTotal
             // 

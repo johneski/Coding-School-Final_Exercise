@@ -72,9 +72,9 @@ namespace FuelStation.Blazor.Server.Controllers
                 if(customers is not null && employees is not null)
                 {
                     var customer = customers.SingleOrDefault(x => x.CardNumber == CardNumber);
-                    customer ??= new();
+                    customer ??= new() { Id = Guid.Empty};
                     var employee = employees.SingleOrDefault(x => x.Credentials.AuthenticationToken == authorization);
-                    employee ??= new();
+                    employee ??= new() { Id = Guid.Empty};
 
                     return new TransactionViewModel()
                     {
