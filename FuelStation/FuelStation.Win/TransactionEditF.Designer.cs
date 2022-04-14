@@ -163,6 +163,7 @@
             this.btnSave.StyleController = this.layoutControl1;
             this.btnSave.TabIndex = 11;
             this.btnSave.Text = "Save";
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnAddLine
             // 
@@ -182,6 +183,7 @@
             this.btnDelete.StyleController = this.layoutControl1;
             this.btnDelete.TabIndex = 12;
             this.btnDelete.Text = "Delete";
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // labelControl1
             // 

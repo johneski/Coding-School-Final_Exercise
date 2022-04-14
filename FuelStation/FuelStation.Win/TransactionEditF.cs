@@ -208,5 +208,24 @@ namespace FuelStation.Win
                 line.TotalValue = line.NetValue - line.DiscountValue;
             }
         }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (grdViewLines.RowCount == 0) return;
+
+            var line = grdViewLines.GetFocusedRow() as TransactionLineViewModel;
+
+            if (line.ItemType == ItemType.Fuel)
+                _fuelItemsInList--;
+
+            _bsTransactionLines.Remove(line);
+
+            CalculateTotal();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
