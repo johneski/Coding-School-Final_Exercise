@@ -18,7 +18,7 @@ namespace FuelStation.Win
     {
         private HttpClient _client;
         private List<TransactionViewModel> _transactions;
-        private BindingSource _bindingSource = new();
+        private BindingSource _bsTransactions = new();
         public TransactionsForm()
         {
             InitializeComponent();
@@ -43,8 +43,8 @@ namespace FuelStation.Win
 
         private void SetBindings()
         {
-            _bindingSource.DataSource = _transactions;
-            grdTransactions.DataSource = _bindingSource;
+            _bsTransactions.DataSource = _transactions;
+            grdTransactions.DataSource = _bsTransactions;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -56,6 +56,16 @@ namespace FuelStation.Win
         {
             TransactionEditF form = new();
             form.ShowDialog();
+        }
+
+        private async void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (grdViewTransactions.RowCount == 0) return;
+
+            var transaction = grdViewTransactions.GetFocusedRow() as TransactionViewModel;
+            await _client.DeleteAsync(Program.baseURL + $"/transaction/{transaction.Id}");
+
+            _bsTransactions.Remove(transaction);
         }
     }
 }

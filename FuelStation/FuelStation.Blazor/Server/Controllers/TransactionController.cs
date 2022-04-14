@@ -144,5 +144,17 @@ namespace FuelStation.Blazor.Server.Controllers
 
             return BadRequest();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id, [FromHeader] Guid authorization)
+        {
+            if(await _userValidation.ValidateTokenAsync(authorization))
+            {
+                await _transactionRepo.DeleteAsync(id);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
     }
 }

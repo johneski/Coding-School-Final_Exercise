@@ -72,6 +72,7 @@ namespace FuelStation.EF.Repositories
                 transaction.PaymentMethod = entity.PaymentMethod;
                 transaction.Total = entity.Total;
                 transaction.TransactionLines = entity.TransactionLines;
+                transaction.IsActive = entity.IsActive;
                 await _fuelStationContext.SaveChangesAsync();
                 return;
             }

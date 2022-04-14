@@ -95,6 +95,7 @@
             this.btnDelete.StyleController = this.layoutControl1;
             this.btnDelete.TabIndex = 6;
             this.btnDelete.Text = "Delete";
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnNew
             // 
@@ -120,6 +121,8 @@
             // 
             this.grdViewTransactions.GridControl = this.grdTransactions;
             this.grdViewTransactions.Name = "grdViewTransactions";
+            this.grdViewTransactions.OptionsBehavior.Editable = false;
+            this.grdViewTransactions.OptionsBehavior.ReadOnly = true;
             // 
             // Root
             // 
