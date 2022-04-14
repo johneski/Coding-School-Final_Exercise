@@ -54,7 +54,10 @@ namespace FuelStation.EF.Repositories
 
         public async Task<Transaction?> GetByIdAsync(Guid id, bool active = true)
         {
-            var transaction = await _fuelStationContext.Transactions.AsNoTracking().Include(x => x.TransactionLines).SingleOrDefaultAsync(x => x.Id == id);
+            var transaction = await _fuelStationContext.Transactions.AsNoTracking().Include(x => x.TransactionLines)
+                                                                                    .Include(x => x.Employee)
+                                                                                    .Include(x => x.Customer)
+                                                                                    .SingleOrDefaultAsync(x => x.Id == id);
             if(transaction is not null)
                 return transaction;
 

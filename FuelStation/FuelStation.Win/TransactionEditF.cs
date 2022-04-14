@@ -28,6 +28,7 @@ namespace FuelStation.Win
         private BindingSource _bsItems = new ();
         private BindingSource _bsTransactionLines = new();
         private int _fuelItemsInList = 0;
+        public Guid? _transactionEditId;
 
         public TransactionEditF()
         {
@@ -39,6 +40,14 @@ namespace FuelStation.Win
         {
             _employee = await _client.GetFromJsonAsync<EmployeeViewModel>(Program.baseURL + "/employee/current");
             _items = await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/active");
+
+            
+            if (_transactionEditId is not null || _transactionEditId != Guid.Empty)
+            {
+                var transactionToEdit = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/active/{_transactionEditId}");
+                if (transactionToEdit is not null)
+                    _transaction = transactionToEdit;
+            }
 
             
             SetBindings();

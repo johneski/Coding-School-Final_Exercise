@@ -67,5 +67,15 @@ namespace FuelStation.Win
 
             _bsTransactions.Remove(transaction);
         }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if(grdViewTransactions.RowCount == 0) return;
+
+            var transaction = grdViewTransactions.GetFocusedRow() as TransactionViewModel;
+            if (transaction is null) return;
+            TransactionEditF form = new() { _transactionEditId = transaction.Id };
+            form.ShowDialog();
+        }
     }
 }

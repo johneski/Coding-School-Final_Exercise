@@ -81,6 +81,46 @@ namespace FuelStation.Blazor.Server.Controllers
             return new List<TransactionViewModel>();
         }
 
+        [HttpGet("active/{id}")]
+        public async Task<TransactionViewModel> GetActiveTransaction([FromHeader] Guid authorization, Guid id)
+        {
+            var transaction = await _transactionRepo.GetByIdAsync(id, true);
+            if (transaction is not null)
+            {
+                var transactionView = new TransactionViewModel();
+                transactionView.Id = transaction.Id;
+                transactionView.CustomerId = transaction.CustomerId;
+                transactionView.EmployeeId = transaction.EmployeeId;
+                transactionView.Date = transaction.Date;
+                transactionView.EmployeeName = $"{transaction.Employee.Name} {transaction.Employee.Surname}";
+                transactionView.CustomerName = $"{transaction.Customer.Name} {transaction.Customer.Surname}";
+                transactionView.PaymentMethod = transaction.PaymentMethod;
+                transactionView.Total = transaction.Total;
+                transactionView.TransactionLines = new();
+
+                foreach(var line in transaction.TransactionLines)
+                {
+                    transactionView.TransactionLines.Add(new TransactionLineViewModel()
+                    {
+                        Id = line.Id,
+                        ItemName = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).Description,
+                        DiscountPercent = line.DiscountPercent,
+                        DiscountValue = line.DiscountValue,
+                        ItemPrice = line.ItemPrice,
+                        NetValue = line.NetValue,
+                        Qty = line.Qty,
+                        TotalValue = line.TotalValue,
+                        ItemType = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).ItemType,
+                    });
+                }
+
+                return transactionView;
+            }
+
+            return new TransactionViewModel();
+        }
+
+
         [HttpGet("newtransaction/{CardNumber}")]
         public async Task<TransactionViewModel> GetNewTransaction(string CardNumber, [FromHeader] Guid authorization)
         {
