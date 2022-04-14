@@ -120,7 +120,9 @@ namespace FuelStation.Win
             TextReadonly(true);
             ButtonsEnabled(false);
 
-            bsCuctomers.DataSource = await GetInactiveCustomersAsync();
+            _customers = await GetInactiveCustomersAsync();
+            bsCuctomers.DataSource = _customers;
+            bsCuctomers.ResetBindings(true);
             grdCustomers.RefreshDataSource();
             grdViewCustomers.RefreshData();
             lblCustomers.Text = "Deleted Customers";
@@ -132,7 +134,9 @@ namespace FuelStation.Win
             TextReadonly(false);
             ButtonsEnabled(true);
 
-            bsCuctomers.DataSource = await GetActiveCustomersAsync();
+            _customers = await GetActiveCustomersAsync();
+            bsCuctomers.DataSource = _customers;
+            bsCuctomers.ResetBindings(true);
             grdCustomers.RefreshDataSource();
             grdViewCustomers.RefreshData();
             lblCustomers.Text = "Active Customers";
