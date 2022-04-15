@@ -79,7 +79,7 @@ namespace FuelStation.Win
 
             var transaction = grdViewTransactions.GetFocusedRow() as TransactionViewModel;
             if (transaction is null) return;
-            TransactionEditF form = new() { _transactionEditId = transaction.Id };
+            TransactionEditF form = new(transaction.Id);
             form.ShowDialog();
         }
     }

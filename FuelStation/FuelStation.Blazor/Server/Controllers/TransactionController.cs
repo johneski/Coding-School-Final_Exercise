@@ -134,6 +134,7 @@ namespace FuelStation.Blazor.Server.Controllers
                     transactionView.TransactionLines.Add(new TransactionLineViewModel()
                     {
                         Id = line.Id,
+                        ItemId = line.ItemId,
                         ItemName = ((await _itemRepo.GetByIdAsync(line.ItemId, true) ?? new Item())).Description,
                         DiscountPercent = line.DiscountPercent,
                         DiscountValue = line.DiscountValue,
@@ -210,6 +211,46 @@ namespace FuelStation.Blazor.Server.Controllers
                 }
 
                 await _transactionRepo.CreateAsync(transaction);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromHeader] Guid authorization, [FromBody] TransactionViewModel transactionView)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization) && await _dataValidation.Validate(transactionView))
+            {
+                var transaction = await _transactionRepo.GetByIdAsync(transactionView.Id, true);
+                transaction.Date = transactionView.Date;
+                transaction.CustomerId = transactionView.CustomerId;
+                transaction.EmployeeId = transactionView.EmployeeId;
+                transaction.PaymentMethod = transactionView.PaymentMethod;
+                transaction.Total = transactionView.Total;
+                transaction.TransactionLines = new();
+                foreach (var line in transactionView.TransactionLines)
+                {
+                    transaction.TransactionLines.Add(new TransactionLine()
+                    {
+                        TransactionId = transaction.Id,
+                        ItemId = line.ItemId,
+                        DiscountPercent = line.DiscountPercent,
+                        ItemPrice = line.ItemPrice,
+                        NetValue = line.NetValue,
+                        TotalValue = line.TotalValue,
+                        Qty = line.Qty,
+                        DiscountValue = line.DiscountValue,
+                    });
+                }
+                try
+                {
+                    await _transactionRepo.UpdateAsync(transactionView.Id, transaction);
+                }catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                
                 return Ok();
             }
 

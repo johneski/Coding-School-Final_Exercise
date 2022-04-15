@@ -74,8 +74,25 @@ namespace FuelStation.EF.Repositories
                 transaction.Date = entity.Date;
                 transaction.PaymentMethod = entity.PaymentMethod;
                 transaction.Total = entity.Total;
-                transaction.TransactionLines = entity.TransactionLines;
                 transaction.IsActive = entity.IsActive;
+                transaction.TransactionLines.Clear();
+
+                foreach (var line in entity.TransactionLines)
+                {
+                    transaction.TransactionLines.Add(new TransactionLine()
+                    {
+                        ItemId = line.ItemId,
+                        ItemPrice = line.ItemPrice,
+                        DiscountPercent = line.DiscountPercent,
+                        DiscountValue = line.DiscountValue,
+                        NetValue = line.NetValue,
+                        Qty = line.Qty,
+                        TotalValue = line.TotalValue,
+                        TransactionId = line.TransactionId,
+                    });
+
+                }
+                _fuelStationContext.Transactions.Update(transaction);
                 await _fuelStationContext.SaveChangesAsync();
                 return;
             }

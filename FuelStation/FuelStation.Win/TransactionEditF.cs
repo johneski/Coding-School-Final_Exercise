@@ -29,11 +29,18 @@ namespace FuelStation.Win
         private BindingSource _bsTransactionLines = new();
         private int _fuelItemsInList = 0;
         public Guid? _transactionEditId;
+        public bool _editMode = false;
 
         public TransactionEditF()
         {
             InitializeComponent();
             _client = Program.serviceProvider.GetRequiredService<HttpClient>();
+        }
+
+        public TransactionEditF(Guid transactionEditId) : this()
+        {
+            _transactionEditId = transactionEditId;
+            _editMode = true;
         }
 
         private async void TransactionEditF_Load(object sender, EventArgs e)
@@ -42,7 +49,7 @@ namespace FuelStation.Win
             _items = await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/active");
 
             
-            if (_transactionEditId is not null && _transactionEditId != Guid.Empty)
+            if (_editMode)
             {
                 var transactionToEdit = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/active/{_transactionEditId}");
                 if (transactionToEdit is not null)
@@ -168,7 +175,6 @@ namespace FuelStation.Win
 
             CalculateTotal();
 
-            
         }
 
         private void grdViewLines_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
@@ -258,13 +264,34 @@ namespace FuelStation.Win
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
+            if (_editMode)
+                await PutTransaction();
+            else
+                await PostTransaction();
+        }
+        
+
+        private async Task PostTransaction()
+        {
             var response = await _client.PostAsJsonAsync(Program.baseURL + "/transaction", _transaction);
             if (response.IsSuccessStatusCode)
             {
                 this.Close();
                 return;
             }
-                
+
+            MessageBox.Show("Something Went Wrong!");
+        }
+
+
+        private async Task PutTransaction()
+        {
+            var response = await _client.PutAsJsonAsync(Program.baseURL + "/transaction", _transaction);
+            if (response.IsSuccessStatusCode)
+            {
+                this.Close();
+                return;
+            }
 
             MessageBox.Show("Something Went Wrong!");
 
