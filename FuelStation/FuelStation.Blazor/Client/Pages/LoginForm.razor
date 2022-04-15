@@ -1,5 +1,6 @@
 ﻿@layout LoginLayout
 @page "/"
+@using Blazor.Shared.Enums
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient client
 @inject NavigationManager navManager
@@ -23,6 +24,7 @@
 @code{
     private LoginEntity login = new();
     private bool _authorized { get; set; } = false;
+    private Tools tools { get; set; } = new();
 
     private async void Submit()
     {
@@ -43,13 +45,23 @@
 
         if(Guid.Empty == authToken)
         {
-            _authorized = false;
             return;
         }
 
         _authorized = true;
         await localStorage.SetItemAsync("authToken", authToken);
-        navManager.NavigateTo("/customers");
+        await tools.LoadAuthToken(client, localStorage);
+        var employee = await client.GetFromJsonAsync<EmployeeViewModel>("/employee/current");
+
+        if(employee.EmployeeType == EmployeeType.Manager || employee.EmployeeType == EmployeeType.Cashier)
+        {
+            navManager.NavigateTo("/customers");    
+        }
+        else
+        {
+            navManager.NavigateTo("/items");  
+        }
+
     }
 
 
