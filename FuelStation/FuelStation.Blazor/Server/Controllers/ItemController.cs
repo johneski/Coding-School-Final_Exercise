@@ -1,4 +1,5 @@
 ﻿using FuelStation.Blazor.Shared.Enums;
+using FuelStation.Blazor.Shared.Tools;
 using FuelStation.Blazor.Shared.ViewModels;
 using FuelStation.EF.Handlers;
 using FuelStation.EF.Models;
@@ -88,7 +89,7 @@ namespace FuelStation.Blazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromHeader]Guid authorization,[FromBody] ItemViewModel itemView)
         {
-            if(_dataValidation.Validate(itemView) && await _userValidation.ValidateTokenAsync(authorization))
+            if(await _dataValidation.Validate(itemView) && await _userValidation.ValidateTokenAsync(authorization))
             {
                 var item = new Item();
                 item.Description = itemView.Description;
@@ -138,7 +139,7 @@ namespace FuelStation.Blazor.Server.Controllers
                 try
                 {
                     var item = await _itemRepo.GetByIdAsync(itemView.Id, true);
-                    if (item is not null && _dataValidation.Validate(itemView))
+                    if (item is not null && await _dataValidation.Validate(itemView))
                     {
                         item.Code = itemView.Code;
                         item.Description = itemView.Description;
@@ -186,6 +187,28 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return false;
+        }
+
+        [HttpGet("newcode")]
+        public async Task<string> NewCode([FromHeader] Guid authorization)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                Tools tools = new();
+                string code;
+                var items = await _itemRepo.GetAllAsync();
+                var codesList = items.Select(x => x.Code).ToList();
+                while (true)
+                {
+                    code = tools.GenerateCode();
+                    if (!codesList.Contains(code))
+                        break;
+                }
+
+                return $"\"{code}\"";
+            }
+
+            return "";
         }
     }
 }

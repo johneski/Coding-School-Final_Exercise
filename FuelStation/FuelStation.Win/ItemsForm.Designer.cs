@@ -265,6 +265,8 @@
             // 
             this.txtCode.Location = new System.Drawing.Point(77, 12);
             this.txtCode.Name = "txtCode";
+            this.txtCode.Properties.ReadOnly = true;
+            this.txtCode.Properties.UseReadOnlyAppearance = false;
             this.txtCode.Size = new System.Drawing.Size(255, 20);
             this.txtCode.StyleController = this.layoutControl1;
             this.txtCode.TabIndex = 0;

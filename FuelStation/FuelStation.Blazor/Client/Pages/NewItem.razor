@@ -20,7 +20,7 @@
                 <label for="code" class="form-label">Code</label>
             </div>
             <div class="col-3">
-                <InputText @bind-Value=item.Code name="code" class="form-control"  />
+                <InputText @bind-Value=item.Code name="code" class="form-control"  Readonly="true"/>
             </div>
         </div>
         <div class="row">
@@ -92,7 +92,9 @@ else
         if(id is not null && Guid.Empty != id)
         {
             item = await httpClient.GetFromJsonAsync<ItemViewModel>($"/item/active/{id}");
+            return;
         }
+        item.Code = await httpClient.GetFromJsonAsync<string>("/item/newcode");
     }
 
     private async void Save()

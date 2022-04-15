@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
+            this.lblMessage = new DevExpress.XtraEditors.LabelControl();
             this.spinPrice = new DevExpress.XtraEditors.SpinEdit();
             this.spinCost = new DevExpress.XtraEditors.SpinEdit();
             this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
@@ -47,7 +48,6 @@
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem2 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.lblMessage = new DevExpress.XtraEditors.LabelControl();
             this.layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem4 = new DevExpress.XtraLayout.EmptySpaceItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
@@ -88,6 +88,16 @@
             this.layoutControl1.Size = new System.Drawing.Size(457, 221);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
+            // 
+            // lblMessage
+            // 
+            this.lblMessage.Appearance.ForeColor = System.Drawing.Color.Red;
+            this.lblMessage.Appearance.Options.UseForeColor = true;
+            this.lblMessage.Location = new System.Drawing.Point(12, 152);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(433, 13);
+            this.lblMessage.StyleController = this.layoutControl1;
+            this.lblMessage.TabIndex = 8;
             // 
             // spinPrice
             // 
@@ -179,6 +189,8 @@
             // 
             this.txtCode.Location = new System.Drawing.Point(77, 12);
             this.txtCode.Name = "txtCode";
+            this.txtCode.Properties.ReadOnly = true;
+            this.txtCode.Properties.UseReadOnlyAppearance = false;
             this.txtCode.Size = new System.Drawing.Size(172, 20);
             this.txtCode.StyleController = this.layoutControl1;
             this.txtCode.TabIndex = 0;
@@ -290,16 +302,6 @@
             this.emptySpaceItem3.Name = "emptySpaceItem3";
             this.emptySpaceItem3.Size = new System.Drawing.Size(196, 73);
             this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
-            // 
-            // lblMessage
-            // 
-            this.lblMessage.Appearance.ForeColor = System.Drawing.Color.Red;
-            this.lblMessage.Appearance.Options.UseForeColor = true;
-            this.lblMessage.Location = new System.Drawing.Point(12, 152);
-            this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(433, 13);
-            this.lblMessage.StyleController = this.layoutControl1;
-            this.lblMessage.TabIndex = 8;
             // 
             // layoutControlItem8
             // 

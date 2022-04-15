@@ -25,9 +25,11 @@ namespace FuelStation.Win
             _client = Program.serviceProvider.GetRequiredService<HttpClient>();
         }
 
-        private void NewItemF_Load(object sender, EventArgs e)
+        private async void NewItemF_Load(object sender, EventArgs e)
         {
+            _item.Code = await _client.GetFromJsonAsync<string>(Program.baseURL + "/item/newcode");
             SetBindings();
+            
         }
 
         private void SetBindings()

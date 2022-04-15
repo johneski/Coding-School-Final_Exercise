@@ -40,8 +40,11 @@ namespace FuelStation.EF.Handlers
             return true;
         }
 
-        public bool Validate(ItemViewModel item)
+        public async Task<bool> Validate(ItemViewModel itemView)
         {
+            var item = await _context.Items.AsNoTracking().SingleOrDefaultAsync(x => x.Code == itemView.Code);
+            if (item is not null || !Regex.IsMatch(item.Code, @"^[0-9]{5,10}$"))
+                return false;
             return true;
         }
 

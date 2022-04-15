@@ -24,6 +24,21 @@ namespace FuelStation.Blazor.Shared.Tools
             return cardNumber;
         }
 
+        public string GenerateCode()
+        {
+            Random rnd = new Random();
+            int number = 0;
+            int length = rnd.Next(5, 11);
+            string code = "";
+            for (int i = 0; i < length; i++)
+            {
+                number = rnd.Next(0, 10);
+                code += number.ToString();
+            }
+
+            return code;
+        }
+
         public async Task LoadAuthToken(HttpClient client, ILocalStorageService localStorage)
         {
             var authToken = await localStorage.GetItemAsStringAsync("authToken");
