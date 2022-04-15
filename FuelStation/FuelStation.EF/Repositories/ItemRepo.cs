@@ -64,6 +64,7 @@ namespace FuelStation.EF.Repositories
             {
                 item.Code = entity.Code;
                 item.Description = entity.Description;
+                item.ItemType = entity.ItemType;
                 item.Cost = entity.Cost;
                 item.Price = entity.Price;
                 item.IsActive = entity.IsActive;

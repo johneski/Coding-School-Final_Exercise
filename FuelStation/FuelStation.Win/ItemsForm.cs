@@ -44,6 +44,10 @@ namespace FuelStation.Win
         public void SetBindings()
         {
             bsItems.DataSource = _items;
+            cmbType.DataSource = Enum.GetValues(typeof(ItemType));
+            cmbType.DataBindings.Add(new Binding("SelectedValue", bsItems, "ItemType", true, DataSourceUpdateMode.OnPropertyChanged));
+
+            
             grdItems.DataSource = bsItems;
 
             txtCode.DataBindings.Add(new Binding("EditValue", bsItems, "Code", true));
@@ -51,9 +55,8 @@ namespace FuelStation.Win
             spinCost.DataBindings.Add(new Binding("EditValue", bsItems, "Cost", true));
             spinPrice.DataBindings.Add(new Binding("EditValue", bsItems, "Price", true));
             
-            cmbType.DataSource = Enum.GetValues(typeof(ItemType));
-            cmbType.DataBindings.Add(new Binding("SelectedValue", bsItems, "ItemType", true, DataSourceUpdateMode.OnPropertyChanged));
-            //cmbType.DataBindings.Add(new Binding("DisplayMember", _currentItem, "ItemType", true, DataSourceUpdateMode.OnPropertyChanged));
+            
+            //cmbType.DataBindings.Add(new Binding("ValueMember", bsItems, "ItemType", true, DataSourceUpdateMode.OnPropertyChanged));
         }
 
         public async Task<List<ItemViewModel>> GetActiveItemsAsync()
@@ -78,13 +81,18 @@ namespace FuelStation.Win
 
         private void grdViewItems_FocusedRowChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs e)
         {
-            if(cmbType.SelectedIndex != -1)
+            if (cmbType.SelectedIndex == -1 && _items.Count() > 0)
+            {
+                _currentItem = _items[0];
+                cmbType.SelectedIndex = (int)_currentItem.ItemType;
+            }
+            else
             {
                 _currentItem = grdViewItems.GetFocusedRow() as ItemViewModel;
                 if (_currentItem is null) return;
                 cmbType.SelectedIndex = (int)_currentItem.ItemType;
             }
-            
+
         }
 
         private async void btnSave_Click(object sender, EventArgs e)

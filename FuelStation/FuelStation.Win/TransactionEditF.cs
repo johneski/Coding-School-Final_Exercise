@@ -42,7 +42,7 @@ namespace FuelStation.Win
             _items = await _client.GetFromJsonAsync<List<ItemViewModel>>(Program.baseURL + "/item/active");
 
             
-            if (_transactionEditId is not null || _transactionEditId != Guid.Empty)
+            if (_transactionEditId is not null && _transactionEditId != Guid.Empty)
             {
                 var transactionToEdit = await _client.GetFromJsonAsync<TransactionViewModel>(Program.baseURL + $"/transaction/active/{_transactionEditId}");
                 if (transactionToEdit is not null)
