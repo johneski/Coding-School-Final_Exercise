@@ -79,10 +79,11 @@ namespace FuelStation.EF.Repositories
 
         public async Task LogOut(Guid id)
         {
-            var credentials = await _fuelStationContext.UserCredentials.SingleOrDefaultAsync(x => x.EmployeeId == id);
+            var credentials = await _fuelStationContext.UserCredentials.SingleOrDefaultAsync(x => x.AuthenticationToken == id);
             if(credentials is not null)
             {
                 credentials.IsLogged = false;
+                credentials.AuthenticationToken = null;
                 await _fuelStationContext.SaveChangesAsync();
                 return;
             }

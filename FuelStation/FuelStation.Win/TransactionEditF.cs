@@ -259,8 +259,20 @@ namespace FuelStation.Win
         private async void btnSave_Click(object sender, EventArgs e)
         {
             var response = await _client.PostAsJsonAsync(Program.baseURL + "/transaction", _transaction);
-            if (!response.IsSuccessStatusCode)
-                MessageBox.Show("Something Went Wrong!");
+            if (response.IsSuccessStatusCode)
+            {
+                this.Close();
+                return;
+            }
+                
+
+            MessageBox.Show("Something Went Wrong!");
+
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

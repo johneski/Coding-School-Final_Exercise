@@ -63,8 +63,14 @@ namespace FuelStation.Win
 
         }
 
+        private async void simpleButton2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            txtPassword.Properties.PasswordChar = '*';
             SetBindings();
         }
 

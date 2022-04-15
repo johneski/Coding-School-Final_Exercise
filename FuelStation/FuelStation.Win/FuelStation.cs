@@ -58,5 +58,13 @@ namespace FuelStation.Win
                 MessageBox.Show("You are not authorized!");
             
         }
+
+        private async void btnLogOut_Click(object sender, EventArgs e)
+        {
+            await _httpClient.PostAsJsonAsync(Program.baseURL + "/employee/logout", "");
+            this.Close();
+            LoginForm form = new();
+            form.ShowDialog();
+        }
     }
 }

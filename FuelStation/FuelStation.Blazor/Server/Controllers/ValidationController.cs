@@ -28,6 +28,7 @@ namespace FuelStation.Blazor.Server.Controllers
             {
                 var credentials = await _context.UserCredentials.SingleOrDefaultAsync(x => x.EmployeeId == employee.Id);
                 credentials.AuthenticationToken = await _userValidation.CreateTokenAsync(employee.Id);
+                credentials.IsLogged = true;
                 await _context.SaveChangesAsync();
                 return credentials.AuthenticationToken;
             }

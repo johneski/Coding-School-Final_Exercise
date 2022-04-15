@@ -237,5 +237,20 @@ namespace FuelStation.Blazor.Server.Controllers
 
             return false;
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogOutEmployee([FromHeader] Guid authorization)
+        {
+            try
+            {
+                await ((EmployeeRepo)_employeeRepo).LogOut(authorization);
+                return Ok();
+            }catch(KeyNotFoundException ex)
+            {
+                return BadRequest();
+            }
+            
+
+        }
     }
 }

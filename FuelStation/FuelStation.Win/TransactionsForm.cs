@@ -52,10 +52,15 @@ namespace FuelStation.Win
             this.Close();
         }
 
-        private void btnNew_Click(object sender, EventArgs e)
+        private async void btnNew_Click(object sender, EventArgs e)
         {
             TransactionEditF form = new();
             form.ShowDialog();
+            _transactions = await _client.GetFromJsonAsync<List<TransactionViewModel>>(Program.baseURL + "/transaction/active");
+            _transactions ??= new();
+            _bsTransactions.DataSource = _transactions;
+            _bsTransactions.ResetBindings(true);
+            grdViewTransactions.RefreshData();
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
