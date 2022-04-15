@@ -220,15 +220,20 @@ namespace FuelStation.Win
             }
 
             txtTotal.Text = _transaction.Total.ToString();
+            CheckPaymentMethod();
         }
 
-        private void ApplyDiscount(decimal discount)
+        private void CheckPaymentMethod()
         {
-            foreach(TransactionLineViewModel line in _bsTransactionLines)
+            if(_transaction.Total > 50)
             {
-                line.DiscountPercent += discount;
-                line.DiscountValue = line.ItemPrice * line.DiscountPercent;
-                line.TotalValue = line.NetValue - line.DiscountValue;
+                _transaction.PaymentMethod = PaymentMethod.Cash;
+                cmbPaymentMethod.SelectedIndex = (int)_transaction.PaymentMethod;
+                cmbPaymentMethod.Enabled = false;
+            }
+            else
+            {
+                cmbPaymentMethod.Enabled = true;
             }
         }
 
