@@ -29,16 +29,6 @@ namespace FuelStation.Win
         {
             DestroyUndoButton();
 
-            HttpResponseMessage response;
-            using (var request = new HttpRequestMessage(HttpMethod.Post, Program.baseURL + "/validation"))
-            {
-                request.Headers.Add("username", "admin");
-                request.Headers.Add("password", "123456789");
-                response = await _client.SendAsync(request);
-                var authorization = await response.Content.ReadAsStringAsync();
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authorization.Replace("\"", ""));
-            }
-
             _customers = await GetActiveCustomersAsync();
             SetBindings();
             SetView();

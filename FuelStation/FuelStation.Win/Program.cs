@@ -25,7 +25,7 @@ namespace FuelStation.Win
             
             
             ApplicationConfiguration.Initialize();
-            Application.Run(new FuelStation());
+            Application.Run(new LoginForm());
             
 
             // To customize application configuration such as set high DPI settings or default font,
