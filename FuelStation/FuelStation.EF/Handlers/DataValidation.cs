@@ -42,8 +42,9 @@ namespace FuelStation.EF.Handlers
 
         public async Task<bool> Validate(ItemViewModel itemView)
         {
-            var item = await _context.Items.AsNoTracking().SingleOrDefaultAsync(x => x.Code == itemView.Code);
-            if (item is not null || !Regex.IsMatch(item.Code, @"^[0-9]{5,10}$"))
+            if (!Regex.IsMatch(itemView.Code, @"^[0-9]{5,10}$"))
+                return false;
+            if(itemView.Cost > itemView.Price || itemView.Price < 0 || itemView.Cost < 0)
                 return false;
             return true;
         }
