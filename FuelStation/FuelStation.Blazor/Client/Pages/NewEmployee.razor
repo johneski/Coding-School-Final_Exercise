@@ -79,6 +79,12 @@
         <div class="col-1">
             <button class="btn btn-danger mt-3" @onclick="GoBack">Cancel</button>
         </div>
+        @if (editMode)
+            {
+                <div class="col-8 justify-content-end d-flex">
+                    <button class="btn btn-secondary mt-3" @onclick="() => Release()">Release</button>
+                </div>
+            }
     </div>
 </EditForm>
 }
@@ -90,6 +96,7 @@ else
 
 @code {
     [Parameter] public Guid? id { get; set; }
+    private bool editMode { get; set; } = false;
     private bool allowed { get; set; } = false;
     private EmployeeViewModel employee { get; set; } = new();
     private Tools tools { get; set; } = new();
@@ -102,7 +109,7 @@ else
         if (!allowed) return;
         if(id is not null && Guid.Empty != id)
         {
-            
+            editMode = true;
             employee = await httpClient.GetFromJsonAsync<EmployeeViewModel>($"/employee/active/{id}");
         }
         else
@@ -125,12 +132,13 @@ else
         {
             response = await httpClient.PutAsJsonAsync<EmployeeViewModel>("/employee", employee);
         }
-        
+
         if (!response.IsSuccessStatusCode)
         {
             await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong!");
             return;
         }
+
 
         navManager.NavigateTo("employees", false);
     }
@@ -140,6 +148,11 @@ else
         navManager.NavigateTo("/employees");
     }
 
-
-
+    private async void Release()
+    {
+        employee.HireDateEnd = DateTime.Now;
+        await httpClient.PutAsJsonAsync<EmployeeViewModel>("/employee", employee);
+        await httpClient.DeleteAsync($"/employee/{employee.Id}");
+        navManager.NavigateTo("employees", false);
+    }
 }
