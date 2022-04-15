@@ -1,4 +1,5 @@
 ﻿using FuelStation.Blazor.Shared.Enums;
+using FuelStation.Blazor.Shared.Tools;
 using FuelStation.Blazor.Shared.ViewModels;
 using FuelStation.EF.Handlers;
 using FuelStation.EF.Models;
@@ -80,6 +81,35 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return new List<TransactionViewModel>();
+        }
+
+        [HttpPost("report")]
+        public async Task<MonthlyLedgerViewModel> GetReport([FromBody] DateTime date)
+        {
+            var transactions = await _transactionRepo.GetAllAsync();
+            MonthlyLedgerViewModel ledger = new();
+            var employees = await _employeeRepo.GetAllAsync();
+            Tools tools = new();
+            foreach(var trans in transactions)
+            {
+                if(trans.Date.Year == date.Year && trans.Date.Month == date.Month)
+                {
+                    ledger.Income += trans.TransactionLines.Sum(x => x.TotalValue);
+                }
+            }
+
+            foreach(var employee in employees)
+            {
+                if(await tools.WasWorking(employee.HireDateStart, employee.HireDateEnd, date))
+                {
+                    ledger.Expenses += employee.SalaryPerMonth;
+                }
+            }
+            ledger.Expenses = 5000m;
+            ledger.Year = date.Year;
+            ledger.Month = date.Month;
+            
+            return ledger;
         }
 
         [HttpGet("active/{id}")]

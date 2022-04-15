@@ -10,7 +10,7 @@
 
 <h1>Items</h1>
 
-<button class="btn btn-primary" @onclick="NewItem">New</button>
+
 @if (_isLoading)
 {
     <tr>
@@ -21,6 +21,7 @@ else
 {
     @if (allowed)
     {
+    <button class="btn btn-primary" @onclick="NewItem">New</button>
     <table class="table table-striped table-hover">
         <thead>
             <tr>

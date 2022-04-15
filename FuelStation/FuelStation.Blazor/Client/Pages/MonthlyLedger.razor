@@ -1,0 +1,86 @@
+﻿@page "/reports"
+@using FuelStation.Blazor.Shared.Enums
+@using FuelStation.Blazor.Shared.Enums
+@inject HttpClient httpClient
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@inject ILocalStorageService localStorage
+
+
+<h3 class="mb-5">New Item</h3>
+
+
+<EditForm Model="@Date" OnValidSubmit="@Check">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    <div class="row">
+        <div class="col-1">
+            <label for="year" class="form-label">Year</label>
+        </div>
+        <div class="col-1">
+            <InputText @bind-Value=Date.Year class="form-control" name="year" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            <label for="month" class="form-label">Month</label>
+        </div>
+        <div class="col-1">
+            <InputSelect @bind-Value=Date.Month class="form-control" name="type">
+                    @foreach (var type in Enum.GetValues(typeof(Month)))
+                    {
+                        <option value="@type">@type</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <button class="btn btn-primary mt-5">Check</button>
+        </div>
+    </div>
+</EditForm>
+
+<table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Month</th>
+                <th>Income</th>                
+                <th>Expenses</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@ledger.Year</td>
+                <td>@ledger.Month</td>
+                <td>@ledger.Income</td>
+                <td>@ledger.Expenses</td>
+            </tr>     
+        </tbody>
+    </table>
+
+
+
+@code {
+
+    private MonthlyLedgerViewModel ledger { get; set; } = new();
+    private DateViewModel Date { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task Check()
+    {
+        DateTime date = new DateTime(Convert.ToInt32(Date.Year), (int)(Month)Date.Month + 1, 1);
+        var response = await httpClient.PostAsJsonAsync("/transaction/report", date);
+        ledger = await response.Content.ReadFromJsonAsync<MonthlyLedgerViewModel>();
+        this.StateHasChanged();
+    }
+
+}
+
+

@@ -45,5 +45,16 @@ namespace FuelStation.Blazor.Shared.Tools
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authToken.Replace("\"", ""));
         }
 
+        public async Task<bool> WasWorking(DateTime start, DateTime? end, DateTime current)
+        {
+            if(end is null)
+                end = DateTime.Now;
+
+            if (start <= current && end >= current)
+                return true;
+
+            return false;
+        }
+
     }
 }
