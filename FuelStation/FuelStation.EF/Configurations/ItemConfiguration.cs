@@ -19,6 +19,8 @@ namespace FuelStation.EF.Configurations
             builder.Property(item => item.Price).HasPrecision(10, 2);
             builder.Property(item => item.Cost).HasPrecision(10, 2);
             builder.HasIndex(item => item.IsActive);
+
+            builder.HasIndex(item => item.Code).IsUnique();
         }
     }
 }

@@ -103,7 +103,12 @@ namespace FuelStation.Win
             CopyTransaction(_transaction, newTransaction);
 
             if (_transaction.CustomerId == Guid.Empty)
+            {
                 MessageBox.Show("Customer not found!");
+                NewCustomerF form = new();
+                form.ShowDialog();
+            }
+                
 
             _bsTransaction.DataSource = _transaction;
             _bsTransaction.ResetBindings(true);
@@ -254,6 +259,8 @@ namespace FuelStation.Win
         private async void btnSave_Click(object sender, EventArgs e)
         {
             var response = await _client.PostAsJsonAsync(Program.baseURL + "/transaction", _transaction);
+            if (!response.IsSuccessStatusCode)
+                MessageBox.Show("Something Went Wrong!");
         }
     }
 }
