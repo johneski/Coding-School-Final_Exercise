@@ -26,14 +26,17 @@ namespace FuelStation.EF.Repositories
         public async Task DeleteAsync(Guid id)
         {
             var employee = await _fuelStationContext.Employees.FindAsync(id);
-            if (employee is not null)
-            {
-                employee.IsActive = false;
-                employee.HireDateEnd ??= DateTime.Now;
-                await _fuelStationContext.SaveChangesAsync();
-            }
-            else
+            if (employee is null)
                 throw new KeyNotFoundException("Employee not found");
+
+            var numOfManagers = await _fuelStationContext.Employees.CountAsync(x => x.EmployeeType == Blazor.Shared.Enums.EmployeeType.Manager && x.IsActive);
+
+            if (employee.EmployeeType == Blazor.Shared.Enums.EmployeeType.Manager && numOfManagers == 1)
+                throw new InvalidOperationException("There is only one manager. You cannot delete him!");
+
+            employee.IsActive = false;
+            employee.HireDateEnd ??= DateTime.Now;
+            await _fuelStationContext.SaveChangesAsync();               
         }
 
         public async Task<List<Employee>> GetAllActiveAsync()

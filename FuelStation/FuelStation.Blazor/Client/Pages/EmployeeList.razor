@@ -127,7 +127,7 @@ else
             return;
         }
 
-        await jsRuntime.InvokeVoidAsync("window.alert", "Something went wrong please try again!");
+        await jsRuntime.InvokeVoidAsync("window.alert", response.ReasonPhrase);
     }
 
     public async void Undo(EmployeeViewModel employee)

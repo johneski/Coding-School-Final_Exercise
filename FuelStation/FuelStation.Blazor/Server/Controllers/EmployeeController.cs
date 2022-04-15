@@ -149,7 +149,10 @@ namespace FuelStation.Blazor.Server.Controllers
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    return BadRequest();
+                    return BadRequest(ex.Message);
+                }catch(InvalidOperationException ex)
+                {
+                    return BadRequest(ex.Message);
                 }
             }
             return BadRequest();
