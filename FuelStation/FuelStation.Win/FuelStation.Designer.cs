@@ -32,6 +32,7 @@
             this.customersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.itemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.transactionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnLogOut = new DevExpress.XtraEditors.SimpleButton();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -41,7 +42,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.customersToolStripMenuItem,
             this.itemsToolStripMenuItem,
-            this.transactionsToolStripMenuItem});
+            this.transactionsToolStripMenuItem,
+            this.rentToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(784, 24);
@@ -68,6 +70,13 @@
             this.transactionsToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.transactionsToolStripMenuItem.Text = "Transactions";
             this.transactionsToolStripMenuItem.Click += new System.EventHandler(this.transactionsToolStripMenuItem_Click);
+            // 
+            // rentToolStripMenuItem
+            // 
+            this.rentToolStripMenuItem.Name = "rentToolStripMenuItem";
+            this.rentToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.rentToolStripMenuItem.Text = "Rent";
+            this.rentToolStripMenuItem.Click += new System.EventHandler(this.rentToolStripMenuItem_Click);
             // 
             // btnLogOut
             // 
@@ -102,5 +111,6 @@
         private ToolStripMenuItem itemsToolStripMenuItem;
         private ToolStripMenuItem transactionsToolStripMenuItem;
         private DevExpress.XtraEditors.SimpleButton btnLogOut;
+        private ToolStripMenuItem rentToolStripMenuItem;
     }
 }

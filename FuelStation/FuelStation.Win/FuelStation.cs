@@ -28,9 +28,6 @@ namespace FuelStation.Win
             }
             else
                 MessageBox.Show("You are not authorized!");
-
-
-            
         }
 
         private async void itemsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,6 +62,18 @@ namespace FuelStation.Win
             this.Close();
             LoginForm form = new();
             form.ShowDialog();
+        }
+
+        private async void rentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var allowed = await _httpClient.GetFromJsonAsync<bool>(Program.baseURL + "/employee/authorization");
+            if (allowed)
+            {
+                RentForm form = new();
+                form.ShowDialog();
+            }
+            else
+                MessageBox.Show("You are not authorized!");
         }
     }
 }

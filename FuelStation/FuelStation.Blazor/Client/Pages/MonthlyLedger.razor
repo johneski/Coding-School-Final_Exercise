@@ -6,30 +6,35 @@
 @inject ILocalStorageService localStorage
 
 
-<h3 class="mb-5">New Item</h3>
+    @if (!allowed)
+{
+    <h1>You are not authorized to see this context!!</h1>
+}
+else{
+<h3 class="mb-5">Monthly Reports</h3>
 
 
-<EditForm Model="@Date" OnValidSubmit="@Check">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-    <div class="row">
-        <div class="col-1">
-            <label for="year" class="form-label">Year</label>
-        </div>
-        <div class="col-1">
-            <InputText @bind-Value=Date.Year class="form-control" name="year" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1">
-            <label for="month" class="form-label">Month</label>
-        </div>
-        <div class="col-2">
-            <InputSelect @bind-Value=Date.Month class="form-control" name="type">
-                    @foreach (var type in Enum.GetValues(typeof(Month)))
-                    {
-                        <option value="@type">@type</option>
-                    }
+        <EditForm Model="@Date" OnValidSubmit="@Check">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                <div class="col-1">
+                    <label for="year" class="form-label">Year</label>
+                </div>
+                <div class="col-2">
+                    <InputText @bind-Value=Date.Year class="form-control" name="year" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-1">
+                    <label for="month" class="form-label">Month</label>
+                </div>
+                <div class="col-2">
+                    <InputSelect @bind-Value=Date.Month class="form-control" name="type">
+                        @foreach (var type in Enum.GetValues(typeof(Month)))
+                        {
+                    <option value="@type">@type</option>
+                        }
             </InputSelect>
         </div>
     </div>
@@ -39,8 +44,8 @@
         </div>
     </div>
 </EditForm>
-
-<table class="table table-striped table-hover">
+    
+    <table class="table table-striped table-hover">
         <thead>
             <tr>
                 <th>Year</th>
@@ -60,16 +65,19 @@
         </tbody>
     </table>
 
-
+    }
 
 @code {
-
+    private bool allowed { get; set; } = false;
     private MonthlyLedgerViewModel ledger { get; set; } = new();
     private DateViewModel Date { get; set; } = new();
+    private Tools tools = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await tools.LoadAuthToken(httpClient, localStorage);
 
+        allowed = await httpClient.GetFromJsonAsync<bool>("employee/authorization");
     }
 
     private async Task Check()
@@ -82,6 +90,7 @@
         }
         var response = await httpClient.PostAsJsonAsync("/transaction/report", date);
         ledger = await response.Content.ReadFromJsonAsync<MonthlyLedgerViewModel>();
+        ledger.Month -= 1;
         this.StateHasChanged();
     }
 

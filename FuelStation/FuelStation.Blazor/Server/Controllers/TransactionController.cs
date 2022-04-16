@@ -16,10 +16,17 @@ namespace FuelStation.Blazor.Server.Controllers
         private IEntityRepo<Item> _itemRepo;
         private IEntityRepo<Employee> _employeeRepo;
         private IEntityRepo<Customer> _customerRepo;
+        private RentRepo _rentRepo;
         private UserValidation _userValidation;
         private DataValidation _dataValidation;
 
-        public TransactionController(IEntityRepo<Transaction> transactionRepo, UserValidation userValidation, DataValidation dataValidation, IEntityRepo<Customer> customerRepo, IEntityRepo<Employee> employeeRepo, IEntityRepo<Item> itemRepo)
+        public TransactionController(IEntityRepo<Transaction> transactionRepo,
+                                     UserValidation userValidation, 
+                                     DataValidation dataValidation, 
+                                     IEntityRepo<Customer> customerRepo, 
+                                     IEntityRepo<Employee> employeeRepo, 
+                                     IEntityRepo<Item> itemRepo,
+                                     RentRepo rentRepo)
         {
             _transactionRepo = transactionRepo;
             _userValidation = userValidation;
@@ -27,6 +34,7 @@ namespace FuelStation.Blazor.Server.Controllers
             _employeeRepo = employeeRepo;
             _customerRepo = customerRepo;
             _dataValidation = dataValidation;
+            _rentRepo = rentRepo;
         }
 
         [HttpGet("active")]
@@ -105,7 +113,9 @@ namespace FuelStation.Blazor.Server.Controllers
                     ledger.Expenses += employee.SalaryPerMonth;
                 }
             }
-            ledger.Expenses = 5000m;
+            var rent = await _rentRepo.GetByDateAsync(date);
+
+            ledger.Expenses += rent.Value;
             ledger.Year = date.Year;
             ledger.Month = date.Month;
             
@@ -280,6 +290,33 @@ namespace FuelStation.Blazor.Server.Controllers
             }
 
             return false;
+        }
+
+        [HttpPost("rent")]
+        public async Task<IActionResult> Rent([FromHeader] Guid authorization, RentViewModel rent)
+        {
+            if (await _userValidation.ValidateTokenAsync(authorization))
+            {
+                var existRent = await _rentRepo.GetByDateAsync(rent.Date);
+                if (existRent is null)
+                {
+                    await _rentRepo.CreateAsync(new Rent()
+                        {
+                            Value = rent.Value,
+                            Date = rent.Date,
+                        });
+                }                    
+                else
+                {
+                    existRent.Value = rent.Value;
+                    existRent.Date = rent.Date;
+                    await _rentRepo.UpdateAsync(existRent.Id, existRent);
+                }
+
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }

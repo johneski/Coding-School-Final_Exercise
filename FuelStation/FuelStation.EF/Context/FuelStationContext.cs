@@ -17,6 +17,7 @@ namespace FuelStation.EF.Context
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLine> TransactionLines { get; set; }
         public DbSet<UserCredentials> UserCredentials { get; set; }
+        public DbSet<Rent> Rent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,12 +28,13 @@ namespace FuelStation.EF.Context
             modelBuilder.ApplyConfiguration(new TransactionConfiguration());
             modelBuilder.ApplyConfiguration(new TransactionLineConfiguration());
             modelBuilder.ApplyConfiguration(new UserCredentialsConfiguration());
+            modelBuilder.ApplyConfiguration(new RentConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            var connString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=FuelStation;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            var connString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=FuelStation2;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             optionsBuilder.UseSqlServer(connString);
         }
 
