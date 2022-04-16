@@ -79,19 +79,47 @@ namespace FuelStation.EF.Repositories
 
                 foreach (var line in entity.TransactionLines)
                 {
-                    transaction.TransactionLines.Add(new TransactionLine()
+                    var existLine = await _fuelStationContext.TransactionLines.SingleOrDefaultAsync(x => x.Id == line.Id);
+                    if (existLine is not null)
                     {
-                        ItemId = line.ItemId,
-                        ItemPrice = line.ItemPrice,
-                        DiscountPercent = line.DiscountPercent,
-                        DiscountValue = line.DiscountValue,
-                        NetValue = line.NetValue,
-                        Qty = line.Qty,
-                        TotalValue = line.TotalValue,
-                        TransactionId = line.TransactionId,
-                    });
+                        existLine.ItemId = line.ItemId;
+                        existLine.ItemPrice = line.ItemPrice;
+                        existLine.DiscountPercent = line.DiscountPercent;
+                        existLine.DiscountValue = line.DiscountValue;
+                        existLine.NetValue = line.NetValue;
+                        existLine.Qty = line.Qty;
+                        existLine.TotalValue = line.TotalValue;
+                    }
+                    else
+                    {
+                        transaction.TransactionLines.Add(new TransactionLine()
+                        {
+                            ItemId = line.ItemId,
+                            ItemPrice = line.ItemPrice,
+                            DiscountPercent = line.DiscountPercent,
+                            DiscountValue = line.DiscountValue,
+                            NetValue = line.NetValue,
+                            Qty = line.Qty,
+                            TotalValue = line.TotalValue,
+                            TransactionId = line.TransactionId,
+                        });
+                    }
+                    
 
                 }
+                var transLinesId = transaction.TransactionLines.Select(x => x.Id).ToList();
+                var entityLinesId = entity.TransactionLines.Select(x => x.Id).ToList();
+
+                foreach (var lineId in transLinesId)
+                {
+                    if (!entityLinesId.Contains(lineId))
+                    {   
+                        var lineToDelete = await _fuelStationContext.TransactionLines.SingleOrDefaultAsync(x => x.Id == lineId);
+                        if (lineToDelete is null) continue;
+                        _fuelStationContext.TransactionLines.Remove(lineToDelete);
+                    }
+                }
+
                 _fuelStationContext.Transactions.Update(transaction);
                 await _fuelStationContext.SaveChangesAsync();
                 return;
