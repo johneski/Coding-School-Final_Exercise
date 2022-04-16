@@ -153,6 +153,6 @@ else
         employee.HireDateEnd = DateTime.Now;
         await httpClient.PutAsJsonAsync<EmployeeViewModel>("/employee", employee);
         await httpClient.DeleteAsync($"/employee/{employee.Id}");
-        navManager.NavigateTo("employees", false);
+        navManager.NavigateTo("employees", true);
     }
 }
