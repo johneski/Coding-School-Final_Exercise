@@ -84,6 +84,13 @@ namespace FuelStation.Win
 
         private void SetView()
         {
+            if (_editMode)
+            {
+                layoutControl1.Controls.Remove(txtCardNumber);
+                layoutControl1.Remove(layoutCardNumber);
+            }
+                
+
             grdViewItems.Columns["Id"].Visible = false;
 
             grdViewLines.Columns["Id"].Visible = false;
