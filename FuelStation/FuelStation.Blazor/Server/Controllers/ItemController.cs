@@ -181,7 +181,9 @@ namespace FuelStation.Blazor.Server.Controllers
         public async Task<bool> EmployeeAuthorization([FromHeader] Guid authorization)
         {
             var employeeType = await _userValidation.GetEmployeeTypeAsync(authorization);
-            if (employeeType is not null)
+            if (employeeType is not null
+                && (employeeType == EmployeeType.Manager
+                || employeeType == EmployeeType.Staff))
             {
                 return true;
             }
