@@ -38,7 +38,7 @@
             // spinRent
             // 
             this.spinRent.EditValue = new decimal(new int[] {
-            0,
+            5000,
             0,
             0,
             0});

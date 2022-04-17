@@ -113,9 +113,11 @@ namespace FuelStation.Blazor.Server.Controllers
                     ledger.Expenses += employee.SalaryPerMonth;
                 }
             }
-            var rent = await _rentRepo.GetByDateAsync(date);
 
-            ledger.Expenses += rent.Value;
+            var rent = await _rentRepo.GetRentFor(date);
+            if(rent is not null)
+                ledger.Expenses += rent.Value;
+
             ledger.Year = date.Year;
             ledger.Month = date.Month;
             

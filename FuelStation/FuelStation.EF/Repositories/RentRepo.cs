@@ -39,5 +39,15 @@ namespace FuelStation.EF.Repositories
                 return;
             }
         }
+
+        public async Task<Rent> GetRentFor(DateTime date)
+        {
+            var dateToCompare = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month)); 
+            var rentsList = await _context.Rent.Where(x => x.Date <= dateToCompare).ToListAsync();
+            if(rentsList.Any())
+                return rentsList.MaxBy(x => x.Date);
+
+            return null;
+        }
     }
 }
