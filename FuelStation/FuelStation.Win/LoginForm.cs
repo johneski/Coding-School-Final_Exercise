@@ -32,6 +32,9 @@ namespace FuelStation.Win
 
         private async void simpleButton1_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(login.username) || string.IsNullOrEmpty(login.password))
+                return;
+
             HttpResponseMessage response;
             string authorization;
             using (var request = new HttpRequestMessage(HttpMethod.Post, Program.baseURL + "/validation"))
@@ -60,6 +63,7 @@ namespace FuelStation.Win
                 return;
             }
 
+            MessageBox.Show("Wrong Username or Password!");
 
         }
 

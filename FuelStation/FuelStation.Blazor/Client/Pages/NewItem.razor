@@ -99,6 +99,12 @@ else
 
     private async void Save()
     {
+        if(item.Cost > item.Price)
+        {
+            await jsRuntime.InvokeVoidAsync("window.alert", "Cost can't be higher than price!");
+            return;
+        }
+
         await tools.LoadAuthToken(httpClient, localStorage);
 
         HttpResponseMessage response;

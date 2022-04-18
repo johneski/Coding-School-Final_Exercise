@@ -3,6 +3,7 @@
 @using Blazor.Shared.Enums
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient client
+@inject IJSRuntime jsRunTime
 @inject NavigationManager navManager
 
 
@@ -45,6 +46,7 @@
 
         if(Guid.Empty == authToken)
         {
+            await jsRunTime.InvokeVoidAsync("window.alert", "Wrong Username or Password!");
             return;
         }
 
