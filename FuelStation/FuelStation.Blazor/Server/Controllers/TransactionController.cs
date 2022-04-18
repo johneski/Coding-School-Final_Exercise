@@ -117,6 +117,8 @@ namespace FuelStation.Blazor.Server.Controllers
             var rent = await _rentRepo.GetRentFor(date);
             if(rent is not null)
                 ledger.Expenses += rent.Value;
+            else
+                ledger.Expenses = 5000m;
 
             ledger.Year = date.Year;
             ledger.Month = date.Month;
