@@ -19,9 +19,6 @@ namespace FuelStation.Win
 
             serviceProvider = services.BuildServiceProvider();
 
-            // Initialize credentials
-
-            var httpClient = serviceProvider.GetRequiredService<HttpClient>();
             
             
             ApplicationConfiguration.Initialize();
